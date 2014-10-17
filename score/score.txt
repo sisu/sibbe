@@ -46,7 +46,7 @@ a4 t16 t32 b32 > C16 t32 d32 e16 t32 F32 g16 t32 a32 b4 t8 < < C8 d8 F8
 < G4 t8 G16 t32 a32 b16 t32 > C32 d16 t32 e32 F8 < G4 G16 t32 a32 b16 t32 > C32 d16 t32 e32
 \times 2/3 { F16 C16 d16 e16 F16 g16 a16 F16 g16 a16 b16 > C16 d16 < a16 b16 > C16 d16 e16
 F16 C16 d16 e16 F16 g16 a16 F16 g16 a16 b16 > C16 d16 < a16 b16 > C16 d16 e16 }
-F16 e16 g16 F16 d16 < a16 F16 D16 < \times 2/3 { a16 > d16 F16 a16 > d16 F16 }
+F16 e16 g16 F16 d16 < a16 F16 d16 < \times 2/3 { a16 > d16 F16 a16 > d16 F16 }
 a16 G16 b16 a16 \times 2/3 { F16 d16 < a16 F16 d16 < a16 > d16 F16 a16 } > d32 F32 a32 > d32 F16 < < <
 a16 b16 > C16 d16 e16 F16 g16 a16 b16 > C16 d16 e16 F16 < < C16 d16 D8 > > g4 F8 <
 b8 t8 b4 t8 a8 G4 t8 b8 > C8 t16 < G16 a8 < < a4 b16 > C16 d16 e16 F16 g16
