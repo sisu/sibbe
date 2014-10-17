@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <cstdlib>
 
 using namespace std;
 int WavReader::to_int(char* data, int data_size){
@@ -32,6 +33,7 @@ int WavReader::nextWavSample(ifstream& in, int size){
 
 vector<short> WavReader::invalidFileFormatErrorMSG(){
     cerr<<"Problem with file format, please make sure that the file is a correct and uncompressed .wav file!"<<endl;
+	abort();
     return vector<short>();
 }
 
@@ -40,55 +42,55 @@ vector<short> WavReader::readUncompressedWavFile(string file_name){
     ifstream fin(file_name);
 
 
-    char* ChunkID = new char[4];
+    char ChunkID[5]={};
     fin.read(ChunkID, 4);
     if(string(ChunkID)!="RIFF") return invalidFileFormatErrorMSG();
 
-    char* ChunkSize = new char[4];
+    char ChunkSize[5] = {};
     fin.read(ChunkSize, 4);
 
-    char* Format = new char[4];
+    char Format[5] = {};
     fin.read(Format, 4);
     if(string(Format)!="WAVE") return invalidFileFormatErrorMSG();
 
-    char* subChunk1ID = new char[4];
+    char subChunk1ID[5] = {};
     fin.read(subChunk1ID,4);
     if(string(subChunk1ID)!="fmt ") return invalidFileFormatErrorMSG();
 
-    char* subChunk1Size = new char[4];
+    char subChunk1Size[5] = {};
     fin.read(subChunk1Size,4);
     if(to_int(subChunk1Size,4)!=16) return invalidFileFormatErrorMSG();
 
-    char* audioFormat = new char[2];
+    char audioFormat[3] = {};
     fin.read(audioFormat,2);
     if(to_int(audioFormat,2)!=1) return invalidFileFormatErrorMSG();
 
-    char* numOfChannels = new char[2];
+    char numOfChannels[3] = {};
     fin.read(numOfChannels,2);
     int numberOfChannels = to_int(numOfChannels,2);
 
-    char* sampleRate = new char[4];
+    char sampleRate[5] = {};
     fin.read(sampleRate,4);
     int sample_rate=to_int(sampleRate,4);
 
-    char* byteRate = new char[4];
+    char byteRate[5] = {};
     fin.read(byteRate,4);
 
-    char* blockAlign = new char[2];
+    char blockAlign[3] = {};
     fin.read(blockAlign,2);
 
-    char* bitsPerSample = new char[2];
+    char bitsPerSample[3] = {};
     fin.read(bitsPerSample,2);
     int bits_per_sample=to_int(bitsPerSample,2);
 
     if(to_int(byteRate,4)!=to_int(sampleRate,4)*numberOfChannels*to_int(bitsPerSample,2)/8)
         return invalidFileFormatErrorMSG();
 
-    char* subChunk2ID = new char[4];
+    char subChunk2ID[5] = {};
     fin.read(subChunk2ID,4);
     if(string(subChunk2ID)!="data") return invalidFileFormatErrorMSG();
 
-    char* subChunk2Size = new char[4];
+    char subChunk2Size[5] = {};
     fin.read(subChunk2Size,4);
 
     int data_array_size=(8*to_int(subChunk2Size,4))/(to_int(bitsPerSample,2)*numberOfChannels);
