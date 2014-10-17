@@ -1,0 +1,99 @@
+!rumpu
+< d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8
+ d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8
+ d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8
+ d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8
+ d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d4 t1 t1
+ d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8
+ d16 d16 d8 d16 d16 d8 d16 d16 d8 d8 t8 t2 t4 d16 d16 d8 d16 d16 d8
+ d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8
+ d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8
+ d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d4 t2 t1 t1 t1 t1 t1 t1 t1
+
+!soolo
+t1 t1 t1 t1 d4 t16 t32 C32 d16 t32 C32 d16 t32 C32 < b16 t32 > C32
+d4 t16 t32 C32 d16 t32 C32 d16 t32 C32 < b16 t32 > C32
+d4 t16 t32 C32 d16 t32 e32 F16 t32 e32 d16 t32 C32 < b4 > C4 d4
+e4 t16 t32 g32 F16 t32 e32 d16 t32 C32 d16 t32 < b32 >
+e4 t16 t32 g32 F16 t32 e32 d16 t32 C32 d16 t32 < b32 >
+f4 t16 t32 G32 g16 t32 f32 b16 t32 A32 G16 t32 > d32
+C16 t32 < b32 > f16 t32 e32 d16 t32 G32 g16 t32 f32 b16 t32 A32 G16 t32 b32 >
+d4 t16 t32 C32 d16 t32 C32 d16 t32 C32 < b16 t32 > C32
+d4 t16 t32 C32 d16 t32 C32 d16 t32 C32 < b16 t32 > C32
+d4 t16 t32 C32 d16 t32 e32 F16 t32 e32 d16 t32 C32 < b4 > C4 d4
+e4 t16 t32 g32 F16 t32 e32 d16 t32 C32 d16 t32 < b32 >
+e4 t16 t32 g32 F16 t32 e32 d16 t32 C32 d16 t32 < b32
+a4 t16 t32 b32 > C16 t32 d32 e16 t32 F32 g16 t32 a32 b4 t8 < < C8 d8 F8
+< G4 t8 G16 t32 a32 b16 t32 > C32 d16 t32 e32 F8 < G4 G16 t32 a32 b16 t32 > C32 d16 t32 e32
+F18 C18 d18 e18 F18 g18 a18 F18 g18 a18 b18 > C18 d18 < a18 b18 > C18 d18 e18
+F18 C18 d18 e18 F18 g18 a18 F18 g18 a18 b18 > C18 d18 < a18 b18 > C18 d18 e18
+F16 e16 g16 F16 d16 < a16 F16 D16 < a18 > d18 F18 a18 > d18 F18
+a16 G16 b16 a16 F18 d18 < a18 F18 d18 < a18 > d18 F18 a18 > d32 F32 a32 > d32 F16 < < 
+a16 b16 > C16 d16 e16 F16 g16 a16 b16 > C16 d16 e16 F16 < < C16 d16 D8 > > g4 F8 <
+b8 t8 b4 t8 a8 G4 t8 b8 > C8 t16 < G16 a8 < < a4 b16 > C16 d16 e16 F16 g16
+a16 b16 > C16 d16 e16 F16 g16 a16 b16 > C16 d16 e16 
+F16 e16 g16 F16 d16 < a16 F18 d18 < a18 > d18 F18 a18 > d32 F32 a32 > d32 F16 < <
+a16 b16 > C16 d16 e16 F16 g16 a16 b16 > C16 d16 e16 F16 < < C16 d16 D8 > > g4 F8 a4
+< < < a15 > c15 D15 g15 F15 c15 D15 F15 A15 a15 D15 F15 a15 > d15 c15
+< F15 a15 > c15 f15 D15 < a15 > c15 D15 g15 F15 c15 D15 F15 A15 a15
+D15 F15 a15 > d15 c15 < F15 a15 > c15 f15 D15 < a15 > c15 D15 g15 F15 c18 D18 F18 A4 t16 a16
+a8 d4 e8 a8 t16 g16 g8 c4 d8 g8 t16 d16 D2 < < < g27 A27 > D27 g27 A27 > D27 g27 A27 > d27
+C24 d24 C24 d24 C24 d24 C24 d24 C24 d24 C24 d24 C24 d24 C24 d24 C24 d24 C24 d24 C24 d24 < b24 > C24
+D1 t1 t1 t1
+
+!viulu1
+ t1 t1 t1 t1 t1 t1 t1 t1 t1 t1 t1 t1 t1 t1 t1 t1 t1 t1 t1 t1 t1 t1 t1 t1 t1 t1 t1 t4 < b8 b16 b16 b8 b16 b16
+ b8 t8 b8 b16 b16 b8 a16 a16 G8 t8 t2 t1 t1 t1 t1 t1 t4 A8 A16 A16 A8 A16 A16 A8 A16 A16 a8 a16 a16 >
+ d8 d16 d16 d8 d16 d16 c8 c16 c16 f8 f16 f16 f8 f16 f16 D8 D16 D16 D8 D16 D16 D8 D16 D16 d8 d16 d16 C8 C16 C16
+ C8 C16 C16 c8 c16 c16 < b8 b16 b16 b8 b16 b16 A8 A16 A16 A8 A16 A16 a8 a16 a16 a8 a16 a16 a8 a16 a16 t1 t1 t1 t1
+
+!viulu2
+ t1 t1 t1 t1 t1 t1 t1 t1 t1 t1 t1 < G8 G16 G16 G8 G16 G16 G8 G16 G16
+ a8 a16 a16 a8 a16 a16 a8 a16 a16 a8 a16 a16 a8 a16 a16 a8 a16 a16 a8 a16 a16 a8 a16 a16 a8 a16 a16 b8 b16 b16 A8 A16 A16 a8 a16 a16
+ b8 b16 b16 b8 b16 b16 b8 b16 b16 b8 b16 b16 b8 b16 b16 b8 b16 b16 a8 a16 a16 a8 a16 a16 a8 a16 a16 a8 a16 a16 a8 a16 a16 a8 t8
+ t1 t1 t1 t1 t1 t1 a8 a16 a16 a8 a16 a16 a8 a16 a16 a8 a16 a16 a8 a16 a16 a8 a16 a16 g8 t8 b8 b16 b16 b8 a16 a16
+ G8 G16 G16 G8 G16 G16 G8 G16 G16 a8 a16 a16 a8 a16 a16 a8 a16 a16 a8 a16 a16 a8 a16 a16 a8 a16 a16 a8 a16 a16 a8 a16 a16 a8 a16 a16
+ a8 a16 a16 a8 a16 a16 a8 a16 a16 a8 a16 a16 a8 a16 a16 a8 a16 a16 a8 a16 a16 A8 A16 A16 A8 A16 A16 A8 A16 A16 a8 a16 a16 a8 a16 a16
+ a8 a16 a16 a8 a16 a16 > c8 c16 c16 c8 c16 c16 c8 c16 c16 c8 c16 c16 < A8 A16 A16 A8 A16 A16 A8 A16 A16 a8 a16 a16 a8 a16 a16 G8 G16 G16
+ g8 g16 g16 g8 g16 g16 g8 g16 g16 a8 a16 a16 a8 a16 a16 a8 a16 a16 > d16 d16 d16 d16 d8 t8 < a8 t16 a8 A4 A4 a4 g1 t1
+
+!altto
+< d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16
+ d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16
+ e8 e16 e16 e8 e16 e16 e8 e16 e16 e8 e16 e16 e8 e16 e16 e8 e16 e16 f8 f16 f16 f8 f16 f16 f8 f16 f16 f8 f16 f16 f8 f16 f16 f8 f16 f16
+ F8 F16 F16 F8 F16 F16 F8 F16 F16 F8 F16 F16 F8 F16 F16 F8 F16 F16 F8 F16 F16 F8 F16 F16 F8 F16 F16 F8 F16 F16 F8 F16 F16 F8 F16 F16
+ g8 g16 g16 g8 g16 g16 g8 g16 g16 g8 g16 g16 g8 g16 g16 g8 g16 g16 F8 F16 F16 F8 F16 F16 F8 F16 F16 g8 g16 g16 g8 g16 g16 F8 t8
+ t8 d16 d16 d8 d4 d8 t8 d16 d16 d8 d4 d8 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 e8 e16 e16 e8 e16 e16 e8 e16 e16 F8 F16 F16 F8 F16 F16
+ F8 F16 F16 g8 g16 g16 g8 g16 g16 F8 F16 F16 F8 F16 F16 F8 F16 F16 F8 F16 F16 D8 D16 D16 D8 D16 D16 e8 t8 g8 g16 g16 g8 f16 f16
+ d16 d16 d16 d16 d8 t8 a8 t16 a16 A4 A4 a4 d8 A8 A8 d8 A8 t16 A16 d8 A8 A8 d8 A8 t16 A16 
+
+!sello
+< < d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16
+ d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16
+ e8 e16 e16 e8 e16 e16 e8 e16 e16 e8 e16 e16 e8 e16 e16 e8 e16 e16 f8 f16 f16 f8 f16 f16 f8 f16 f16 G8 G16 G16 G8 G16 G16 G8 G16 G16
+ a8 a16 a16 a8 a16 a16 a8 a16 a16 a8 a16 a16 a8 a16 a16 a8 a16 a16 a8 a16 a16 a8 a16 a16 a8 a16 a16 b8 b16 b16 A8 A16 A16 a8 a16 a16
+ b8 b16 b16 b8 b16 b16 b8 b16 b16 b8 b16 b16 b8 b16 b16 b8 b16 b16 a8 a16 a16 a8 a16 a16 a8 a16 a16 > C8 C16 C16 C8 C16 C16 d8 t8
+ t8 > F16 F16 F8 F4 F8 t8 F16 F16 F8 F4 F8 < d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 e8 e16 e16 e8 e16 e16
+ e8 e16 e16 F8 F16 F16 F8 F16 F16 F8 F16 F16 g8 g16 g16 g8 g16 g16 a8 a16 a16 a8 a16 a16 a8 a16 a16 a8 a16 a16 F8 F16 F16 F8 F16 F16
+ b8 t8 b8 b16 b16 b8 a16 a16 G8 G16 G16 G8 G16 G16 G8 G16 G16 a8 a16 a16 a8 a16 a16 a8 a16 a16 >
+ C8 C16 C16 d8 d16 d16 C8 C16 C16 < a8 a16 a16 a8 a16 a16 a8 a16 a16 a8 a16 a16 a8 a16 a16 a8 a16 a16
+ a8 a16 a16 > F8 F16 F16 F8 F16 F16 F8 F16 F16 F8 F16 F16 F8 F16 F16 F8 F16 F16 F8 F16 F16 D8 D16 D16
+ D8 D16 D16 D8 D16 D16 F8 F16 F16 F8 F16 F16 F8 F16 F16 D8 D16 D16 D8 D16 D16 d8 d16 d16 C8 C16 C16
+ C8 C16 C16 c8 c16 c16 < b8 b16 b16 b8 b16 b16 A8 A16 A16 A8 A16 A16 a8 a16 a16 a8 a16 a16 g8 g16 g16
+ d16 d16 d16 d16 d8 > d8 > d8 t16 d16 < d8 > d8 d8 < d8 > d8 t16 d16 < d8 > d8 d8 < d8 > d8 t16 d16 < d8 > d8 d8 < d8 > d8 t16 d16
+
+!basso
+< < < d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16
+ d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16
+ d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16
+ d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16
+ d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 t8
+ t8 d16 d16 d8 d4 d8 t8 d16 d16 d8 d4 d8
+ d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16
+ d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 < b8 b16 b16 b8 b16 b16 > e8 t8 d8 d16 d16 d8 d16 d16
+ d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 g8 g16 g16 F8 F16 F16 e8 e16 e16
+ d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 
+ d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 d8 d16 d16 g8 g16 g16 g8 g16 g16 c8 c16 c16
+ f8 f16 f16 f8 f16 f16 < A8 A16 A16 > D8 D16 D16 D8 D16 D16 D8 D16 D16 < a8 a16 a16 a8 a16 a16 g8 g16 g16
+> d16 d16 d16 d16 d8 < g8 > g8 t16 g16 < g8 > g8 g8 < g8 > g8 t16 g16
+ < g8 > g8 t16 g16 < g8 > g8 g8 < g8 > g8 t16 g16 < g8 > g8 t16 g16 < g8 > g8 g8 < g8 > g8 t16 g16 
