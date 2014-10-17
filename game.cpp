@@ -5,12 +5,15 @@
 #include "render/Renderer.hpp"
 #include "util/math.hpp"
 #include <iostream>
-#include <deque>
 using namespace std;
 
 namespace {
 
 const double BOW_LEN = 20;
+const double NOTE_SPEED = 2.0;
+const double SHOW_BEFORE = 20.0;
+const double SHOW_AFTER = 1.0;
+const double HIT_RANGE = 0.3;
 
 
 Renderer render;
@@ -22,6 +25,7 @@ ProgramPtr basicProgram;
 struct Note {
 	double time;
 	int note;
+	bool done;
 
 	bool operator<(const Note& n) const {
 		return time < n.time;
@@ -53,12 +57,22 @@ void initGame() {
 	render.transform = perspectiveM(1.0, 4.0/3.0, 0.1, 1000);
 
 	for(int i=0; i<100; ++i) {
-		notes.push_back({1.0+i, i%4});
+		notes.push_back({1.0+i, i%4, false});
 	}
 }
 
 void updateGameState(double dt) {
 	totalTime += dt;
+
+	auto noteEnd = lower_bound(notes.begin(), notes.end(), totalTime + HIT_RANGE);
+	int chosen = getChosenString();
+	for(auto iter = lower_bound(notes.begin(), notes.end(), totalTime - HIT_RANGE);
+			iter != noteEnd; ++iter) {
+		Note& n = *iter;
+		if (n.done) continue;
+		if (n.note != chosen) continue;
+		n.done = true;
+	}
 }
 
 void moveBow(double dx, double dy) {
@@ -93,9 +107,13 @@ void drawFrame() {
 		render.add(o);
 	}
 	const double BOW_POS = 3.0;
-	for(Note n: notes) {
+	auto noteEnd = lower_bound(notes.begin(), notes.end(), totalTime + SHOW_BEFORE * NOTE_SPEED);
+	for(auto iter = lower_bound(notes.begin(), notes.end(), totalTime - SHOW_AFTER * NOTE_SPEED);
+			iter != noteEnd; ++iter) {
+		Note& n = *iter;
+		if (n.done) continue;
 		RenderObject o(markerModel, basicProgram);
-		Vec3 v = {offset[n.note][0], offset[n.note][1], 2.0*(n.time - totalTime + BOW_POS)};
+		Vec3 v = {offset[n.note][0], offset[n.note][1], NOTE_SPEED*(n.time - totalTime) + BOW_POS};
 		o.transform = view * translate(v);
 		o.paramsv3["color"] = Vec3(0,0,1);
 		render.add(o);
