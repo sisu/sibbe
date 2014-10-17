@@ -1,4 +1,5 @@
 #include "game.hpp"
+#include "color.hpp"
 #include "modelgen.hpp"
 #include "render/Model.hpp"
 #include "render/projection.hpp"
@@ -6,12 +7,13 @@
 #include "util/math.hpp"
 #include <iostream>
 #include <algorithm>
+#include <fstream>
 using namespace std;
 
 namespace {
 
 const double BOW_LEN = 20;
-const double NOTE_SPEED = 2.0;
+const double NOTE_SPEED = 25.0;
 const double SHOW_BEFORE = 20.0;
 const double SHOW_AFTER = 1.0;
 const double HIT_RANGE = 0.3;
@@ -34,12 +36,21 @@ struct Note {
 	bool operator<(double t) const {
 		return time < t;
 	}
+
+	int string() const {
+		return max(0, min(3,note / 10));
+	}
+	int key() const {
+		return note % 10;
+	}
 };
 vector<Note> notes;
 
 double bowX=0, bowY=0;
 
 double totalTime;
+
+bool pressedKeys[32];
 
 int getChosenString() {
 	if (bowY < -0.2*M_PI) return 0;
@@ -57,13 +68,22 @@ void initGame() {
 	basicProgram = make_shared<Program>(Program::fromFiles("shaders/t.vert", "shaders/t.frag"));
 	render.transform = perspectiveM(1.0, 4.0/3.0, 0.1, 1000);
 
+#if 0
 	for(int i=0; i<100; ++i) {
-		notes.push_back({1.0+i, i%4, false});
+		notes.push_back({1.0+i, i%4*10, false});
 	}
+#else
+	ifstream in("score/sisu.txt");
+	double time;
+	int note;
+	while(in>>time>>note) {
+		notes.push_back({time, note, false});
+	}
+#endif
 }
 
 void updateGameState(double dt) {
-	totalTime += dt;
+	totalTime += dt / 2.5;
 
 	auto noteEnd = lower_bound(notes.begin(), notes.end(), totalTime + HIT_RANGE);
 	int chosen = getChosenString();
@@ -71,7 +91,8 @@ void updateGameState(double dt) {
 			iter != noteEnd; ++iter) {
 		Note& n = *iter;
 		if (n.done) continue;
-		if (n.note != chosen) continue;
+		if (n.string() != chosen) continue;
+		if (!pressedKeys[n.key()]) continue;
 		n.done = true;
 	}
 }
@@ -82,6 +103,13 @@ void moveBow(double dx, double dy) {
 	bowX = clamp(bowX, -.5*BOW_LEN, .5*BOW_LEN);
 	double ylim = .25*M_PI;
 	bowY = clamp(bowY, -ylim, ylim);
+}
+
+void keyDown(int key) {
+	pressedKeys[key] = 1;
+}
+void keyUp(int key) {
+	pressedKeys[key] = 0;
 }
 
 void drawFrame() {
@@ -114,9 +142,10 @@ void drawFrame() {
 		Note& n = *iter;
 		if (n.done) continue;
 		RenderObject o(markerModel, basicProgram);
-		Vec3 v = {offset[n.note][0], offset[n.note][1], NOTE_SPEED*(n.time - totalTime) + BOW_POS};
+		Vec2 off = offset[n.string()];
+		Vec3 v = {off[0], off[1], NOTE_SPEED*(n.time - totalTime) + BOW_POS};
 		o.transform = view * translate(v);
-		o.paramsv3["color"] = Vec3(0,0,1);
+		o.paramsv3["color"] = HSV(n.key() / 10.0, 1.0, 1.0);
 		render.add(o);
 	}
 	{
