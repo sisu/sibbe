@@ -99,17 +99,11 @@ void callback(void* udata, Uint8* s, int len)
 	(void)udata;
 	len /= 2;
 	int len0 = len;
-#if 1
 	int rem = bgMusic.size() - musicPos;
 	len = min(len, rem);
 	memcpy(s, &bgMusic[musicPos], 2*len);
 	memset(s+2*len, 0, 2*(len0-len));
 	musicPos += len;
-#else
-	Sint16* x = (Sint16*)s;
-	static int k;
-	for(int i=0; i<len0; ++i) x[i] = 10000*sin(M_PI*k++*880/FREQ);
-#endif
 }
 
 SDL_AudioSpec spec = {
@@ -124,6 +118,14 @@ SDL_AudioSpec spec = {
 	0 // userdata
 };
 
+void genMusic() {
+	for(int i=0; i<1<<20; ++i) {
+		int n = 1 + i/(FREQ/2) % 4;
+		short a = 10000 * sin(M_PI * i * 440*n / FREQ);
+		bgMusic.push_back(a);
+	}
+}
+
 }
 
 int main(/*int argc, char* argv[]*/) {
@@ -131,6 +133,7 @@ int main(/*int argc, char* argv[]*/) {
 //	atexit(SDL_Quit);
 	screen = SDL_SetVideoMode(1600, 900, 0, SDL_OPENGL | SDL_RESIZABLE);
 	assert(screen);
+	genMusic();
 	SDL_OpenAudio(&spec, 0);
 	SDL_PauseAudio(0);
 	mainLoop();
