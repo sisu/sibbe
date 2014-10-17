@@ -40,7 +40,7 @@ struct Model {
 
 	template<int N>
 	void setAttr(string name, const vector<Vector<float,N>>& arr) {
-		setAttr(name, &arr[0], arr.size);
+		setAttr(name, &arr[0], arr.size());
 	}
 	template<int N>
 	void setAttr(string name, const Vector<float,N>* arr, int k) {

@@ -30,6 +30,7 @@ Model makeCube(float size) {
 		m.addTriangle(s[0],s[1],s[2]);
 		m.addTriangle(s[0],s[2],s[3]);
 	}
+	m.load();
 	return m;
 }
 Model makeQuad(float size) {
@@ -47,5 +48,32 @@ Model makeQuad(float size) {
 	m.setAttr("normal", ns, 4);
 	m.addTriangle(0,1,2);
 	m.addTriangle(0,2,3);
+	m.load();
+	return m;
+}
+
+Model makeCylinder(float rad, float height, int parts) {
+	vector<Vec3> vts;
+	vector<Vec3> normals;
+	Model m;
+	for(int i=0; i<parts; ++i) {
+		double t = 2*M_PI*i/parts;
+		double x = cos(t), y = sin(t);
+		vts.emplace_back(rad*x,rad*y,0);
+		vts.emplace_back(rad*x,rad*y,height);
+		normals.emplace_back(x,y,0);
+		normals.emplace_back(x,y,0);
+		int low=2*i, low2=2*(i+1)%parts;
+		int hi=low+1, hi2=low2+1;
+		m.addTriangle(low, hi, low2);
+		m.addTriangle(low2, hi, hi2);
+	}
+	for(int i=1; i+1<parts; ++i) {
+		m.addTriangle(0, 2*i, 2*(i+1));
+		m.addTriangle(1, 2*i+1, 2*(i+1)+1);
+	}
+	m.setAttr("pos", vts);
+	m.setAttr("normal", vts);
+	m.load();
 	return m;
 }
