@@ -77,13 +77,13 @@ void initGame() {
 	double time;
 	int note;
 	while(in>>time>>note) {
-		notes.push_back({time, note, false});
+		notes.push_back({2.4 * time, note, false});
 	}
 #endif
 }
 
 void updateGameState(double dt) {
-	totalTime += dt / 2.4;
+	totalTime += dt;
 
 	auto noteEnd = lower_bound(notes.begin(), notes.end(), totalTime + HIT_RANGE);
 	int chosen = getChosenString();
@@ -120,7 +120,8 @@ void drawFrame() {
 	Matrix4 view = Matrix4(scale(1,1,-1)) * Matrix4(translate(0,-3,5)) * Rotate(M_PI*0.05, 0);
 //	render.transform = perspectiveM(1.0, 4.0/3.0, 0.1, 1000);
 //	render.transform = Identity();
-	Vec2 offset[] = {{-1.5,0}, {-0.5,0.3}, {0.5,0.3}, {1.5,0}};
+//	Vec2 offset[] = {{-1.5,0}, {-0.5,0.3}, {0.5,0.3}, {1.5,0}};
+	Vec2 offset[] = {{-1.5,0}, {-0.5,0.0}, {0.5,0.0}, {1.5,0}};
 	int chosen = getChosenString();
 	int idx=-1;
 	for(Vec2 off : offset) {
@@ -161,4 +162,13 @@ void drawFrame() {
 		render.add(o);
 	}
 	render.flush();
+}
+
+double getSoloVolume() {
+	return 1.0;
+	auto iter = lower_bound(notes.begin(), notes.end(), totalTime - HIT_RANGE);
+	if (iter == notes.begin()) return 1;
+	--iter;
+	if (!iter->done) return 0.5;
+	return 1.0;
 }
