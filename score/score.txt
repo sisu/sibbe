@@ -16,11 +16,11 @@ a4 t16 t32 b32 > C16 t32 d32 e16 t32 F32 g16 t32 a32 b4 t8 < < C8 d8 F8
 F24 C24 d24 e24 F24 g24 a24 F24 g24 a24 b24 > C24 d24 < a24 b24 > C24 d24 e24
 F24 C24 d24 e24 F24 g24 a24 F24 g24 a24 b24 > C24 d24 < a24 b24 > C24 d24 e24
 F16 e16 g16 F16 d16 < a16 F16 D16 < a24 > d24 F24 a24 > d24 F24
-a16 G16 b16 a16 F24 d24 < a24 F24 d24 < a24 > d24 F24 a24 > d32 F32 a32 > d32 F16 < < 
+a16 G16 b16 a16 F24 d24 < a24 F24 d24 < a24 > d24 F24 a24 > d32 F32 a32 > d32 F16 < < <
 a16 b16 > C16 d16 e16 F16 g16 a16 b16 > C16 d16 e16 F16 < < C16 d16 D8 > > g4 F8 <
 b8 t8 b4 t8 a8 G4 t8 b8 > C8 t16 < G16 a8 < < a4 b16 > C16 d16 e16 F16 g16
 a16 b16 > C16 d16 e16 F16 g16 a16 b16 > C16 d16 e16 
-F16 e16 g16 F16 d16 < a16 F24 d24 < a24 > d24 F24 a24 > d32 F32 a32 > d32 F16 < <
+F16 e16 g16 F16 d16 < a16 F24 d24 < a24 > d24 F24 a24 > d32 F32 a32 > d32 F16 < < <
 a16 b16 > C16 d16 e16 F16 g16 a16 b16 > C16 d16 e16 F16 < < C16 d16 D8 > > g4 F8 a4
 < < < a20 > c20 D20 g20 F20 c20 D20 F20 A20 a20 D20 F20 a20 > d20 c20
 < F20 a20 > c20 f20 D20 < a20 > c20 D20 g20 F20 c20 D20 F20 A20 a20
