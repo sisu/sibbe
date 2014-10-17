@@ -3,6 +3,10 @@
 LOG_CHANNEL(Buffer);
 
 Buffer::~Buffer() {
+	clear();
+}
+
+void Buffer::clear() {
 	if (id) glDeleteBuffers(1, &id);
 }
 

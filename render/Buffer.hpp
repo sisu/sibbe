@@ -6,8 +6,26 @@
 using namespace std;
 
 struct Buffer {
-	Buffer(Buffer&& model) = default;
-	Buffer& operator=(Buffer&& model) = default;
+	Buffer(Buffer&& model) {
+		ptrs = move(model.ptrs);
+		names = move(model.names);
+		index = move(model.index);
+		sizes = move(model.sizes);
+		target = model.target;
+		id = model.id;
+		model.id = 0;
+	}
+	Buffer& operator=(Buffer&& model) {
+		clear();
+		ptrs = move(model.ptrs);
+		names = move(model.names);
+		index = move(model.index);
+		sizes = move(model.sizes);
+		target = model.target;
+		id = model.id;
+		model.id = 0;
+		return *this;
+	}
 	Buffer(const Buffer& model) = delete;
 
 	void load(GLenum usage = GL_STATIC_DRAW);
@@ -24,6 +42,8 @@ struct Buffer {
 
 	Buffer(GLenum target): target(target), id(0) { index.push_back(0); }
 	~Buffer();
+
+	void clear();
 
 private:
 	vector<const void*> ptrs;
