@@ -5,6 +5,7 @@
 #include "render/Renderer.hpp"
 #include "util/math.hpp"
 #include <iostream>
+#include <algorithm>
 using namespace std;
 
 namespace {
