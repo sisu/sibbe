@@ -1,5 +1,6 @@
 #include "game.hpp"
 #include "render/GL.hpp"
+#include "sound/wav_reader.hpp"
 #include <SDL/SDL.h>
 #include <iostream>
 #include <cassert>
@@ -133,7 +134,8 @@ int main(/*int argc, char* argv[]*/) {
 //	atexit(SDL_Quit);
 	screen = SDL_SetVideoMode(1600, 900, 0, SDL_OPENGL | SDL_RESIZABLE);
 	assert(screen);
-	genMusic();
+//	genMusic();
+	bgMusic = WavReader::readUncompressedWavFile("lol.wav");
 	SDL_OpenAudio(&spec, 0);
 	SDL_PauseAudio(0);
 	mainLoop();
