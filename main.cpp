@@ -1,8 +1,11 @@
 #include "game.hpp"
+#include "render/GL.hpp"
 #include <SDL/SDL.h>
 #include <iostream>
 #include <cassert>
-#include "render/GL.hpp"
+#include <cstring>
+#include <vector>
+#include <cmath>
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
@@ -85,12 +88,50 @@ void mainLoop() {
 #endif
 }
 
+vector<short> bgMusic;
+size_t musicPos;
+
+const int FREQ = 44100;
+const int SAMPLES = 512;
+
+void callback(void* udata, Uint8* s, int len)
+{
+	(void)udata;
+	len /= 2;
+	int len0 = len;
+#if 1
+	int rem = bgMusic.size() - musicPos;
+	len = min(len, rem);
+	memcpy(s, &bgMusic[musicPos], 2*len);
+	memset(s+2*len, 0, 2*(len0-len));
+	musicPos += len;
+#else
+	Sint16* x = (Sint16*)s;
+	static int k;
+	for(int i=0; i<len0; ++i) x[i] = 10000*sin(M_PI*k++*880/FREQ);
+#endif
+}
+
+SDL_AudioSpec spec = {
+	FREQ, // freq
+	AUDIO_S16, // format
+	1, // channels
+	0, // silence
+	SAMPLES, // samples
+	0, // padding
+	0, // size
+	callback, // callback
+	0 // userdata
+};
+
 }
 
 int main(/*int argc, char* argv[]*/) {
-	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER);
+	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_AUDIO);
 //	atexit(SDL_Quit);
 	screen = SDL_SetVideoMode(1600, 900, 0, SDL_OPENGL | SDL_RESIZABLE);
 	assert(screen);
+	SDL_OpenAudio(&spec, 0);
+	SDL_PauseAudio(0);
 	mainLoop();
 }

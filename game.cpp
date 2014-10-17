@@ -83,7 +83,7 @@ void initGame() {
 }
 
 void updateGameState(double dt) {
-	totalTime += dt;
+	totalTime += dt / 2.5;
 
 	auto noteEnd = lower_bound(notes.begin(), notes.end(), totalTime + HIT_RANGE);
 	int chosen = getChosenString();
