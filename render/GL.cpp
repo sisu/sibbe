@@ -43,8 +43,11 @@ void GL::useProgram(GLuint prog) {
 void GL::check(const char* file, int line) {
 	GLenum err = glGetError();
 	if (err) {
-//		LOG<<"GL error @ "<<file<<' '<<line<<" : "<<gluErrorString(err);
+#ifdef __EMSCRIPTEN__
 		LOG<<"GL error @ "<<file<<' '<<line<<" : "<<err;
+#else
+		LOG<<"GL error @ "<<file<<' '<<line<<" : "<<gluErrorString(err);
+#endif
 		abort();
 	}
 }

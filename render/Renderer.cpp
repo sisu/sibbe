@@ -36,15 +36,22 @@ void Renderer::draw(const RenderObject& o) {
 		for(int i=0; i<3; ++i) for(int j=0; j<3; ++j) normalM[i][j]=o.transform[i][j];
 		glUniformMatrix3fv(idx, 1, 0, normalM.ptr());
 	}
+	CHECK_GL();
 	for(const auto& i: o.paramsv3) {
 		GLint id = glGetAttribLocation(o.program->id, i.first.c_str());
-		glVertexAttrib3fv(id, &i.second[0]);
+		if (id>=0) glVertexAttrib3fv(id, &i.second[0]);
+		CHECK_GL();
 	}
 
 	assert(o.model);
 	Model& m = *o.model;
 	m.bind(o.program->id);
+//	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	CHECK_GL();
 
+//	cout<<"drawing "<<m.indices.size()<<'\n';
 	glDrawElements(GL_TRIANGLES, m.indices.size(), GL_UNSIGNED_SHORT, 0);
+//	glDrawElements(GL_TRIANGLES, m.indices.size(), GL_UNSIGNED_SHORT, &m.indices[0]);
+//	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+//	glDrawArrays(GL_TRIANGLES, 0, 3);
 }

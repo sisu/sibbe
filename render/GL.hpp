@@ -28,5 +28,8 @@ private:
 
 extern GL gl;
 
-//#define CHECK_GL() gl.check(__FILE__, __LINE__)
+#ifdef __EMSCRIPTEN__
 #define CHECK_GL()
+#else
+#define CHECK_GL() gl.check(__FILE__, __LINE__)
+#endif

@@ -22,12 +22,14 @@ void Buffer::bind(GLuint prog) {
 		glGenBuffers(1, &id);
 		LOG<<"generated buf "<<id;
 	}
+//	LOG<<"bind buffer "<<target<<" to "<<id;
 	gl.bindBuffer(target, id);
 	CHECK_GL();
 	if (!prog) return;
 
 	for(size_t i=0; i<names.size(); ++i) {
 		GLint idx = glGetAttribLocation(prog, names[i].c_str());
+//		LOG<<"binding "<<names[i]<<" to "<<idx<<" ; "<<sizes[i]<<' '<<index[i];
 		if (idx<0) continue;
 		glEnableVertexAttribArray(idx);
 		// FIXME: assuming floats
