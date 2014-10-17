@@ -7,7 +7,11 @@
 #include <emscripten.h>
 #endif
 
-static bool end=0;
+namespace {
+
+SDL_Surface* screen;
+
+bool end=0;
 double prevTime;
 void loopIter() {
 	SDL_Event e;
@@ -17,6 +21,12 @@ void loopIter() {
 			SDLKey k = e.key.keysym.sym;
 			if (k==SDLK_ESCAPE) end=1;
 		} else if (e.type==SDL_KEYUP) {
+		} else if (e.type==SDL_MOUSEMOTION) {
+			int midx = screen->w/2, midy = screen->h/2;
+			if (e.motion.x!=midx || e.motion.y!=midy) {
+				moveBow(e.motion.xrel, e.motion.yrel);
+				SDL_WarpMouse(midx, midy);
+			}
 		}
 	}
 	double time = SDL_GetTicks()/1000.;
@@ -43,10 +53,12 @@ void mainLoop() {
 #endif
 }
 
+}
+
 int main(/*int argc, char* argv[]*/) {
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER);
 //	atexit(SDL_Quit);
-	SDL_Surface* s = SDL_SetVideoMode(800, 600, 0, SDL_OPENGL | SDL_RESIZABLE);
-	assert(s);
+	screen = SDL_SetVideoMode(800, 600, 0, SDL_OPENGL | SDL_RESIZABLE);
+	assert(screen);
 	mainLoop();
 }
