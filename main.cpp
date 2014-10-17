@@ -90,6 +90,7 @@ void mainLoop() {
 }
 
 vector<short> bgMusic;
+vector<short> solo;
 size_t musicPos;
 
 const int FREQ = 44100;
@@ -105,6 +106,11 @@ void callback(void* udata, Uint8* s, int len)
 	memcpy(s, &bgMusic[musicPos], 2*len);
 	memset(s+2*len, 0, 2*(len0-len));
 	musicPos += len;
+
+	Sint16* stream = (Sint16*)s;
+	for(int i=0; i<len && musicPos+i<solo.size(); ++i) {
+		stream[i] += solo[musicPos + i];
+	}
 }
 
 SDL_AudioSpec spec = {
@@ -130,12 +136,13 @@ void genMusic() {
 }
 
 int main(/*int argc, char* argv[]*/) {
+	bgMusic = WavReader::readUncompressedWavFile("sound/tausta.wav");
+	solo = WavReader::readUncompressedWavFile("sound/soolo.wav");
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_AUDIO);
 //	atexit(SDL_Quit);
 	screen = SDL_SetVideoMode(1600, 900, 0, SDL_OPENGL | SDL_RESIZABLE);
 	assert(screen);
 //	genMusic();
-	bgMusic = WavReader::readUncompressedWavFile("lol.wav");
 	SDL_OpenAudio(&spec, 0);
 	SDL_PauseAudio(0);
 	mainLoop();
