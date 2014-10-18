@@ -7,6 +7,7 @@
 #include "render/projection.hpp"
 #include "render/Renderer.hpp"
 #include "util/math.hpp"
+#include "random/highscore.hpp"
 #include <iostream>
 #include <algorithm>
 #include <fstream>
@@ -16,6 +17,8 @@ double volChange = 0.4;
 double curVolume = 1.0;
 double destVolume = 1.0;
 GameMode gameMode = HARD;
+HighScore highScore;
+long long score = 0;
 
 namespace {
 
@@ -62,8 +65,6 @@ vector<Note> notes;
 double bowX=0, bowY=0;
 
 double totalTime;
-
-long long score = 0;
 
 double randf() {
 	return (double)rand() / RAND_MAX;
@@ -339,12 +340,31 @@ void drawImageFrame(GLuint tex) {
 	render.flush();
 }
 
-void drawEnding() {
+void drawEnding(const string& name) {
 	render.clear();
 	gl.disable(GL_DEPTH_TEST);
 	gl.enable(GL_BLEND);
 
+	const double size = 0.08;
 	char buf[64];
 	sprintf(buf, "Final score: %lld", score);
-	drawText(buf, 0.1, -0.5, 0.7, false);
+	drawText(buf, size, -0.5, 0.8, false);
+	drawText("Please enter your name", size, -0.8, 0.6, false);
+	string nameString = ">" + name;
+	drawText(nameString.c_str(), size, -0.5, 0.4, false);
+}
+
+void drawHighScore() {
+	render.clear();
+	gl.disable(GL_DEPTH_TEST);
+	gl.enable(GL_BLEND);
+
+	const double size = 0.08;
+	for(int i=1; i<=10; ++i) {
+		char buf[64];
+		sprintf(buf, "%lld", highScore.getPointsByRank(i));
+		drawText(buf, size, 0.2, 0.8 - 0.1*i, true);
+		string name = highScore.getNameByRank(i);
+		drawText(name.c_str(), size, -0.7, 0.8 - 0.1*i, false);
+	}
 }

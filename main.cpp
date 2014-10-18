@@ -2,6 +2,7 @@
 #include "image.hpp"
 #include "render/GL.hpp"
 #include "sound/wav_reader.hpp"
+#include "random/highscore.hpp"
 #include <SDL/SDL.h>
 #include <iostream>
 #include <cassert>
@@ -17,10 +18,12 @@ using namespace std;
 extern double volChange;
 extern double curVolume;
 extern GameMode gameMode;
+extern HighScore highScore;
+extern long score;
 
 namespace {
 
-enum MenuState { START, MENU, GAME, ENDING };
+enum MenuState { START, MENU, GAME, ENDING, HIGHSCORE };
 MenuState menuState = START;
 
 GLuint startTex, menuTex;
@@ -61,6 +64,10 @@ int getNoteKey(SDLKey k) {
 	return -1;
 }
 
+string name;
+
+const string scoreFile = "scores.dat";
+
 void handleKey(SDLKey k) {
 	if (k==SDLK_F10) end=1;
 	if (menuState == START) {
@@ -73,7 +80,7 @@ void handleKey(SDLKey k) {
 			musicPos = 0;
 		}
 		if(k==SDLK_h){
-			//HIGHSCORES
+			menuState = HIGHSCORE;
 		}
 		if(k==SDLK_q)
 			end = 1;
@@ -82,10 +89,22 @@ void handleKey(SDLKey k) {
 		if (note>=0) keyDown(note);
 		if (k==SDLK_t) {
 			menuState = ENDING;
+			name.clear();
 //			menuState = START;
 //			musicPos = 0;
 		}
 	} else if (menuState == ENDING) {
+		if (k == SDLK_RETURN) {
+			menuState = START;
+			musicPos = 0;
+			highScore.addPlayer(name, score);
+			highScore.writeToFile(scoreFile);
+		} else if (k>='a' && k<='z') {
+			name += k;
+		} else if (k==SDLK_BACKSPACE && !name.empty()) {
+			name.erase(name.end()-1);
+		}
+	} else if (menuState == HIGHSCORE) {
 		if (k == SDLK_RETURN) {
 			menuState = START;
 			musicPos = 0;
@@ -125,7 +144,9 @@ void loopIter() {
 		prevTime = time;
 		drawFrame();
 	} else if (menuState == ENDING) {
-		drawEnding();
+		drawEnding(name);
+	} else if (menuState == HIGHSCORE) {
+		drawHighScore();
 	}
 	SDL_GL_SwapBuffers();
 	{
@@ -134,9 +155,10 @@ void loopIter() {
 		SDL_UnlockAudio();
 	}
 	if (menuState == GAME && musicPos > bgMusic.size() + 2*FREQ) {
-//		menuState = ENDING;
-		menuState = START;
-		musicPos = 0;
+		menuState = ENDING;
+		name.clear();
+//		menuState = START;
+//		musicPos = 0;
 	}
 
 	if (end) {
@@ -148,6 +170,7 @@ void mainLoop() {
 	prevTime = SDL_GetTicks()/1000.;
 	startTex = makeTexture("alku.jpg");
 	menuTex = makeTexture("valikko.jpg");
+	highScore.loadFromFile(scoreFile);
 	initGame();
 #ifdef __EMSCRIPTEN__
 	emscripten_set_main_loop(loopIter, 60, true);

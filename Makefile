@@ -1,4 +1,4 @@
-DIRS:=. render util sound
+DIRS:=. render util sound random
 SRC:=$(wildcard $(addsuffix /*.cpp,$(DIRS)))
 OBJ:=$(patsubst %.cpp,obj/%.o,$(SRC))
 ODIR:=obj
