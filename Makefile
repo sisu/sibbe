@@ -22,7 +22,7 @@ $(BIN): $(ODIRS) $(OBJ)
 	$(CXX) -o "$@" $(OBJ) $(CXXFLAGS) $(LIBS)
 
 $(BIN).html: $(ODIRS) $(OBJ)
-	$(CXX) -o "$@" $(OBJ) $(CXXFLAGS)
+	$(CXX) -o "$@" $(OBJ) $(CXXFLAGS) --preload-file data --preload-file score --preload-file sound --preload-file shaders -s TOTAL_MEMORY=520093696
 
 $(OBJ): $(ODIR)/%.o: %.cpp
 	$(CXX) "$<" -c -o "$@" $(CXXFLAGS)
