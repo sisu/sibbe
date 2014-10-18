@@ -253,6 +253,16 @@ void drawScoreShow() {
 	render.flush();
 }
 
+inline Vec3 interpolate(float part, vector<Vec3> vs) {
+	if (part==1) return vs.back();
+	int cnt = vs.size()-1;
+	int fst = part * cnt;
+	int snd = fst+1;
+	float start = fst / cnt;
+	float x = part - start;
+	return (1-x) * vs[fst] + x * vs[snd];
+}
+
 void drawFrame() {
 	render.clear();
 	gl.enable(GL_DEPTH_TEST);
@@ -289,7 +299,11 @@ void drawFrame() {
 		Vec2 off = offset[n.string()];
 		Vec3 v = {off[0], off[1], NOTE_SPEED*(n.time - totalTime) + BOW_POS};
 		o.transform = view * translate(v);
-		o.paramsv3["color"] = HSV(n.key() / 10.0, 1.0, 1.0);
+//		o.paramsv3["color"] = HSV(n.key() / 10.0, 1.0, 1.0);
+//		float part = n.key() / 9.0f;
+//		o.paramsv3["color"] = (1-part) * Vec3(1,0,0) + part * Vec3(0,0,1);
+//		o.paramsv3["color"] = interpolate(n.key()/9.0, {{.5,.5,1}, {0,0,1}, {1,0,1}, {1,0,0}, {.5,0,0}});
+		o.paramsv3["color"] = interpolate(n.key()/9.0, {{.5,.5,1}, {1,0,1}, {.5,0,0}});
 		if (n.done) o.paramsv3["color"] = Vec3(0.3,0,0);
 		render.add(o);
 	}
