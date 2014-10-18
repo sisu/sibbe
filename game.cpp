@@ -15,7 +15,7 @@ using namespace std;
 double volChange = 0.4;
 double curVolume = 1.0;
 double destVolume = 1.0;
-GameMode gameMode = INSANE;
+GameMode gameMode = HARD;
 
 namespace {
 

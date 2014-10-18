@@ -197,6 +197,8 @@ int main(int argc, char* argv[]) {
 			volChange = atof(argv[++i]);
 		} else if (s=="-h") {
 			gameMode = HARD;
+		} else if (s=="-i") {
+			gameMode = INSANE;
 		} else {
 			cout<<"Unknown argument "<<s<<'\n';
 		}
