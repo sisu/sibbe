@@ -52,7 +52,7 @@ void loopIter() {
 		if (e.type==SDL_QUIT) end=1;
 		else if (e.type==SDL_KEYDOWN) {
 			SDLKey k = e.key.keysym.sym;
-			if (k==SDLK_ESCAPE) end=1;
+			if (k==SDLK_F10) end=1;
 //			cout<<"key "<<k<<'\n';
 			int note = getNoteKey(k);
 			if (note>=0) keyDown(note);
