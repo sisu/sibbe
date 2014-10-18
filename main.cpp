@@ -75,17 +75,17 @@ const string scoreFile = "scores.dat";
 size_t nextFFTPos;
 const int FFT_UPDATE_INTERVAL = FREQ / 40;
 
-void updateFFT() {
+void updateFFT(size_t mpos) {
 	const int FFT_SIZE = 4096;
 	static float samples[FFT_SIZE];
 	static float zeros[FFT_SIZE];
 	static float rcos[FFT_SIZE];
 	static float rsin[FFT_SIZE];
 	int i = 0;
-	for(; i<FFT_SIZE && musicPos + i < bgMusic.size(); ++i) {
+	for(; i<FFT_SIZE && mpos + i < bgMusic.size(); ++i) {
 		float s = 0;
-		if (musicPos + i < bgMusic.size()) s += bgMusic[musicPos + i];
-		if (musicPos + i < solo.size()) s += soloVolume * solo[musicPos + i];
+		if (mpos + i < bgMusic.size()) s += bgMusic[mpos + i];
+		if (mpos + i < solo.size()) s += soloVolume * solo[mpos + i];
 		samples[i] = s;
 	}
 	for(;i < FFT_SIZE; ++i)
@@ -215,8 +215,8 @@ void loopIter() {
 		soloVolume = curVolume;
 		size_t pos = musicPos;
 		SDL_UnlockAudio();
-		while (pos >= nextFFTPos) {
-			updateFFT();
+		while (pos + FREQ*5/40 >= nextFFTPos) {
+			updateFFT(nextFFTPos);
 			nextFFTPos += FFT_UPDATE_INTERVAL;
 		}
 	}
