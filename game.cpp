@@ -22,7 +22,7 @@ namespace {
 const double BOW_LEN = 20;
 const double NOTE_SPEED = 25.0;
 const double SHOW_BEFORE = 100.0;
-const double SHOW_AFTER = 1.0;
+const double SHOW_AFTER = 5.0;
 const double HIT_RANGE = 0.3;
 
 
