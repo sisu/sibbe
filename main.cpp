@@ -68,16 +68,37 @@ string name;
 
 const string scoreFile = "scores.dat";
 
+void changeState(MenuState state) {
+	menuState = state;
+	switch(state) {
+		case START:
+			musicPos = 0;
+			break;
+		case MENU:
+			break;
+		case GAME:
+			newGame();
+			prevTime = SDL_GetTicks() / 1000.0;
+			musicPos = 0;
+			break;
+		case ENDING:
+			name.clear();
+			break;
+		case HIGHSCORE:
+			break;
+		default:
+			cerr<<"Invalid state "<<state<<'\n';
+			break;
+	};
+}
+
 void handleKey(SDLKey k) {
 	if (k==SDLK_F10) end=1;
 	if (menuState == START) {
 		if (k==SDLK_RETURN) menuState = MENU;
 	} else if (menuState == MENU) {
 		if(k==SDLK_n){					
-			newGame();
-			menuState = GAME;
-			prevTime = SDL_GetTicks() / 1000.0;
-			musicPos = 0;
+			changeState(GAME);
 		}
 		if(k==SDLK_h){
 			menuState = HIGHSCORE;
@@ -88,17 +109,14 @@ void handleKey(SDLKey k) {
 		int note = getNoteKey(k);
 		if (note>=0) keyDown(note);
 		if (k==SDLK_t) {
-			menuState = ENDING;
+			changeState(ENDING);
 			name.clear();
-//			menuState = START;
-//			musicPos = 0;
 		}
 	} else if (menuState == ENDING) {
 		if (k == SDLK_RETURN) {
-			menuState = START;
-			musicPos = 0;
 			highScore.addPlayer(name, score);
 			highScore.writeToFile(scoreFile);
+			changeState(START);
 		} else if (k>='a' && k<='z') {
 			name += k;
 		} else if (k==SDLK_BACKSPACE && !name.empty()) {
@@ -106,8 +124,7 @@ void handleKey(SDLKey k) {
 		}
 	} else if (menuState == HIGHSCORE) {
 		if (k == SDLK_RETURN) {
-			menuState = START;
-			musicPos = 0;
+			changeState(START);
 		}
 	}
 }
@@ -155,10 +172,7 @@ void loopIter() {
 		SDL_UnlockAudio();
 	}
 	if (menuState == GAME && musicPos > bgMusic.size() + 2*FREQ) {
-		menuState = ENDING;
-		name.clear();
-//		menuState = START;
-//		musicPos = 0;
+		changeState(ENDING);
 	}
 
 	if (end) {
