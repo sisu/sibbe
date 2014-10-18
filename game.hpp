@@ -16,3 +16,5 @@ void drawEnding(const string& name);
 void drawHighScore();
 
 void drawImageFrame(GLuint tex);
+
+static const int FFT_BUCKETS = 100;

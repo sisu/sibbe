@@ -23,10 +23,10 @@ extern HighScore highScore;
 extern long score;
 extern bool showScoreGet;
 
+extern float fftRes[];
+
 namespace {
 
-const int FFT_BUCKETS = 100;
-float fftRes[FFT_BUCKETS];
 
 enum MenuState { START, MENU, GAME, ENDING, HIGHSCORE };
 MenuState menuState = START;
@@ -74,7 +74,7 @@ string name;
 const string scoreFile = "scores.dat";
 
 void updateFFT() {
-	const int FFT_SIZE = 1024;
+	const int FFT_SIZE = 4096;
 	static float samples[FFT_SIZE];
 	static float zeros[FFT_SIZE];
 	static float rcos[FFT_SIZE];

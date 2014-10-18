@@ -1,5 +1,7 @@
 #include "render/GL.hpp"
 
+#include "render/Texture.hpp"
+
 #include "game.hpp"
 #include "color.hpp"
 #include "modelgen.hpp"
@@ -23,6 +25,8 @@ GameMode gameMode = HARD;
 HighScore highScore;
 long long score = 0;
 bool showScoreGet = 0;
+
+float fftRes[FFT_BUCKETS];
 
 namespace {
 
@@ -95,12 +99,14 @@ struct BG
 {
 	shared_ptr<Program> program;
 	Buffer vBuffer = Buffer(GL_ARRAY_BUFFER);
+	Texture fftdata;
 } bg;
 
 
 void initBG()
 {
 	bg.program = make_shared<Program>(Program::fromFiles("shaders/bg.vert", "shaders/bg.frag"));
+	bg.fftdata.init();
 
 	vector<Vec2> pos = { {-1,-1}, {1,-1}, {-1,1}, {1,1} };
 	vector<Vec2> uv = { {0,0}, {1,0}, {0,1}, {1,1} };
@@ -297,9 +303,16 @@ void drawBg() {
 	gl.disable(GL_DEPTH_TEST);
 
 	gl.useProgram(bg.program->id);
-
 	bg.vBuffer.bind(bg.program->id);
- 
+
+	bg.fftdata.setData(fftRes, FFT_BUCKETS, 1);
+
+	auto idx = glGetUniformLocation(bg.program->id, "fft");
+	if(idx >= 0)
+	  glUniform1i(idx, 0);
+	else
+	  cout << "Failed to bind tex" << endl;
+
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 	bg.vBuffer.unbind(bg.program->id);
