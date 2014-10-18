@@ -81,12 +81,15 @@ void updateFFT() {
 	static float zeros[FFT_SIZE];
 	static float rcos[FFT_SIZE];
 	static float rsin[FFT_SIZE];
-	for(int i=0; i<FFT_SIZE && musicPos + i < bgMusic.size(); ++i) {
+	int i = 0;
+	for(; i<FFT_SIZE && musicPos + i < bgMusic.size(); ++i) {
 		float s = 0;
 		if (musicPos + i < bgMusic.size()) s += bgMusic[musicPos + i];
 		if (musicPos + i < solo.size()) s += soloVolume * solo[musicPos + i];
 		samples[i] = s;
 	}
+	for(;i < FFT_SIZE; ++i)
+	  samples[i] = 0;
 	vector<float> fsin, fcos;
 	asd_fft_f(rcos, rsin, samples, zeros, FFT_SIZE);
 	for(int i=0, j=0; i<FFT_BUCKETS; ++i) {
@@ -96,7 +99,7 @@ void updateFFT() {
 		for(;j < end; ++j) {
 			sum += hypot(rcos[j], rsin[j]);
 		}
-		fftRes[i] = sum / (cnt * FFT_SIZE);
+		fftRes[i] = 0.9f*fftRes[i] + 0.1f*sum / (cnt * FFT_SIZE);
 	}
 }
 

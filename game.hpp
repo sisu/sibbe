@@ -17,4 +17,4 @@ void drawHighScore();
 
 void drawImageFrame(GLuint tex);
 
-static const int FFT_BUCKETS = 100;
+static const int FFT_BUCKETS = 1000;
