@@ -345,6 +345,6 @@ void drawEnding() {
 	gl.enable(GL_BLEND);
 
 	char buf[64];
-	sprintf(buf, "%lld", score);
-	drawText(buf, 0.3, 0.5, 0.5, false);
+	sprintf(buf, "Final score: %lld", score);
+	drawText(buf, 0.1, -0.5, 0.7, false);
 }
