@@ -21,7 +21,7 @@ namespace {
 
 const double BOW_LEN = 20;
 const double NOTE_SPEED = 25.0;
-const double SHOW_BEFORE = 20.0;
+const double SHOW_BEFORE = 100.0;
 const double SHOW_AFTER = 1.0;
 const double HIT_RANGE = 0.3;
 
@@ -283,8 +283,8 @@ void drawFrame() {
 		render.add(o);
 	}
 	const double BOW_POS = 3.0;
-	auto noteEnd = lower_bound(notes.begin(), notes.end(), totalTime + SHOW_BEFORE * NOTE_SPEED);
-	for(auto iter = lower_bound(notes.begin(), notes.end(), totalTime - SHOW_AFTER * NOTE_SPEED);
+	auto noteEnd = lower_bound(notes.begin(), notes.end(), totalTime + SHOW_BEFORE / NOTE_SPEED);
+	for(auto iter = lower_bound(notes.begin(), notes.end(), totalTime - SHOW_AFTER / NOTE_SPEED);
 			iter != noteEnd; ++iter) {
 		Note& n = *iter;
 		if (n.score) continue;
