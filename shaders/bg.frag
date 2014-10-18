@@ -30,8 +30,8 @@ void main() {
   float val = texture2D(fft, vec2(samplePoint, 0.25)).r;
 
   float diff = val/1.1 - uv.y;
-  if(diff > 0)
-    diff = diff/ ( 0.2025 + (1 - smoothstep(0.1, 0.6, val))*0.5);
+  if(diff > 0.0)
+    diff = diff/ ( 0.2025 + (1.0 - smoothstep(0.1, 0.6, val))*0.5);
   else
     diff = abs(diff)/0.05;
 
