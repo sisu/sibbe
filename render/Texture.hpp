@@ -1,6 +1,13 @@
 #pragma once
 
 struct Texture {
-	int id;
+
+	Texture();
+
 	void bind();
+
+	void setData(float *data, int w, int h);
+
+	int id;
+
 };
