@@ -128,6 +128,15 @@ struct String
 void String::init()
 {
   stringModel = make_shared<Model>(makeCylinder(0.05, 200, 16));
+  vector<float> spiral;
+  for(int i = 0; i < 16; ++i) {
+    float base = i/4.f;
+    spiral.emplace_back(base);
+    spiral.emplace_back(base + 400.f);
+  }
+  stringModel->setAttr("spiral", spiral);
+  stringModel->load();
+
   program = make_shared<Program>(Program::fromFiles("shaders/string.vert", "shaders/string.frag"));
 }
 

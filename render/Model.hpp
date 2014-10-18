@@ -42,6 +42,10 @@ struct Model {
 	}
 	void load();
 
+	void setAttr(string name, const vector<float>& arr) {
+		vattrs.push_back({name, arr, 1});
+	}
+
 	template<int N>
 	void setAttr(string name, const vector<Vector<float,N>>& arr) {
 		setAttr(name, &arr[0], arr.size());
