@@ -1,3 +1,5 @@
+#include "render/GL.hpp"
+
 #include "game.hpp"
 #include "color.hpp"
 #include "modelgen.hpp"
@@ -8,6 +10,7 @@
 #include "render/Renderer.hpp"
 #include "util/math.hpp"
 #include "random/highscore.hpp"
+
 #include <iostream>
 #include <algorithm>
 #include <fstream>
@@ -39,6 +42,9 @@ ProgramPtr basicProgram;
 ProgramPtr markerProgram;
 ProgramPtr textProgram;
 GLuint scoreTexture;
+
+ProgramPtr bgProgram;
+
 
 struct Note {
 	Note(double time, int note):time(time), note(note), done(0), score(0) {}
@@ -85,6 +91,25 @@ vector<ScoreShow> scoreShow;
 int lastKeyPressed = 0;
 
 
+struct BG
+{
+	shared_ptr<Program> program;
+	Buffer vBuffer = Buffer(GL_ARRAY_BUFFER);
+} bg;
+
+
+void initBG()
+{
+	bg.program = make_shared<Program>(Program::fromFiles("shaders/bg.vert", "shaders/bg.frag"));
+
+	vector<Vec2> pos = { {-1,-1}, {1,-1}, {-1,1}, {1,1} };
+	vector<Vec2> uv = { {0,0}, {1,0}, {0,1}, {1,1} };
+
+	bg.vBuffer.add(pos, "pos", 2);
+	bg.vBuffer.add(uv, "texCoords", 2);
+	bg.vBuffer.load();
+}
+
 
 double getDestVolume() {
 	auto iter = lower_bound(notes.begin(), notes.end(), totalTime - HIT_RANGE);
@@ -118,6 +143,7 @@ void initGame() {
 	basicProgram = make_shared<Program>(Program::fromFiles("shaders/t.vert", "shaders/t.frag"));
 	markerProgram = make_shared<Program>(Program::fromFiles("shaders/t.vert", "shaders/marker.frag"));
 	textProgram = make_shared<Program>(Program::fromFiles("shaders/text.vert", "shaders/text.frag"));
+	initBG();
 	initText();
 	scoreTexture = makeTexture("data/sibbe100mk.jpg");
 }
@@ -266,8 +292,26 @@ inline Vec3 interpolate(float part, vector<Vec3> vs) {
 	return (1-x) * vs[fst] + x * vs[snd];
 }
 
+void drawBg() {
+
+	gl.disable(GL_DEPTH_TEST);
+
+	gl.useProgram(bg.program->id);
+
+	bg.vBuffer.bind(bg.program->id);
+ 
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+	bg.vBuffer.unbind(bg.program->id);
+	CHECK_GL();
+}
+
+
 void drawFrame() {
 	render.clear();
+
+	drawBg();
+
 	gl.enable(GL_DEPTH_TEST);
 	gl.disable(GL_BLEND);
 	render.transform = perspectiveM(1.0, 4.0/3.0, 0.1, 1000);
