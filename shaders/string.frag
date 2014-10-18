@@ -11,7 +11,7 @@ void main() {
 	vec3 light = vec3(s3,s3,-s3);
 
 	float f = fract(sp);
-	float p = clamp(2*(abs(0.5 - fract(sp)) + 0.3), 0,1);
+	float p = clamp(2.0*(abs(0.5 - fract(sp)) + 0.3), 0.0, 1.0);
 
 
 	float l =  0.1 + p * 0.9 * max(0.0, dot(normalize(norm), light));
