@@ -2,6 +2,7 @@
 #include "color.hpp"
 #include "modelgen.hpp"
 #include "text.hpp"
+#include "image.hpp"
 #include "render/Model.hpp"
 #include "render/projection.hpp"
 #include "render/Renderer.hpp"
@@ -31,6 +32,7 @@ ModelPtr bowModel;
 ModelPtr quadModel;
 ProgramPtr basicProgram;
 ProgramPtr textProgram;
+GLuint scoreTexture;
 
 struct Note {
 	double time;
@@ -60,6 +62,21 @@ double totalTime;
 bool pressedKeys[32];
 
 long long score = 0;
+
+double randf() {
+	return (double)rand() / RAND_MAX;
+}
+struct ScoreShow {
+	ScoreShow() {
+		pos = Vec2(0.7f,0.5f) + 0.3f*Vec2(randf(), randf());
+		dir = Vec2(0, 0.3);
+		time = 0.3;
+	}
+	Vec2 pos;
+	Vec2 dir;
+	double time;
+};
+vector<ScoreShow> scoreShow;
 
 double getDestVolume() {
 	auto iter = lower_bound(notes.begin(), notes.end(), totalTime - HIT_RANGE);
@@ -107,6 +124,13 @@ void initGame() {
 #endif
 
 	initText();
+	{
+		glGenTextures(1, &scoreTexture);
+		glBindTexture(GL_TEXTURE_2D, scoreTexture);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		loadImage("data/sibbe100mk.jpg");
+	}
 }
 
 void updateGameState(double dt) {
@@ -122,8 +146,20 @@ void updateGameState(double dt) {
 		if (!pressedKeys[n.key()]) continue;
 		n.done = true;
 		score += 100;
+		scoreShow.emplace_back();
 	}
 	updateVolume(dt);
+	for(size_t i=0; i<scoreShow.size(); ) {
+		ScoreShow& ss = scoreShow[i];
+		ss.time -= dt;
+		if (ss.time<0) {
+			scoreShow[i] = scoreShow.back();
+			scoreShow.pop_back();
+		} else {
+			ss.pos += float(dt) * ss.dir;
+			++i;
+		}
+	}
 }
 
 void moveBow(double dx, double dy) {
@@ -159,6 +195,7 @@ void drawScore() {
 	char buf[64];
 	sprintf(buf, "%lld", score);
 	writeToTexture(buf, &w, &h);
+
 #endif
 #if 1
 	{
@@ -174,6 +211,19 @@ void drawScore() {
 	render.flush();
 
 	glDeleteTextures(1, &tex);
+}
+
+void drawScoreShow() {
+	glBindTexture(GL_TEXTURE_2D, scoreTexture);
+	render.transform = orthoM(-1, 1, -1, 1, -1, 1);
+	for(ScoreShow ss: scoreShow) {
+		RenderObject o(quadModel, textProgram);
+		Matrix4 move = translate(ss.pos);
+		o.transform = move * scale(0.1, 0.05);
+		o.uniform1i["texture"] = 0;
+		render.add(o);
+	}
+	render.flush();
 }
 
 void drawFrame() {
@@ -230,4 +280,5 @@ void drawFrame() {
 	render.flush();
 
 	drawScore();
+	drawScoreShow();
 }

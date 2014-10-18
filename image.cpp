@@ -87,3 +87,13 @@ int MySDL_glTexImage2D(SDL_Surface *kuva)
 	SDL_SetColorKey(kuva, kuva_flags, kuva_colorkey);
 	return 0;
 }
+
+#include <SDL/SDL_image.h>
+#include <cassert>
+void loadImage(const char* file) {
+	SDL_Surface* img = IMG_Load(file);
+	assert(img);
+	int res = MySDL_glTexImage2D(img);
+	assert(!res);
+	SDL_FreeSurface(img);
+}
