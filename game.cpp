@@ -305,7 +305,9 @@ void drawFrame() {
 //		float part = n.key() / 9.0f;
 //		o.paramsv3["color"] = (1-part) * Vec3(1,0,0) + part * Vec3(0,0,1);
 //		o.paramsv3["color"] = interpolate(n.key()/9.0, {{.5,.5,1}, {0,0,1}, {1,0,1}, {1,0,0}, {.5,0,0}});
-		o.paramsv3["color"] = interpolate(n.key()/9.0, {{.5,.5,1}, {1,0,1}, {.5,0,0}});
+//		o.paramsv3["color"] = interpolate(n.key()/9.0, {{.5,.5,1}, {1,0,1}, {.5,0,0}});
+		o.paramsv3["color"] = interpolate(n.key()/9.0,
+				{{0,0,1}, {0,1,1}, {0,1,0}, {1,1,0}, {1,0,0}});
 		if (n.done) o.paramsv3["color"] = Vec3(0.3,0,0);
 		render.add(o);
 	}
