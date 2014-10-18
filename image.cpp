@@ -24,7 +24,7 @@ int MySDL_glTexImage2D(SDL_Surface *kuva)
 	Uint32 *ptr;
 	Uint32 kuva_flags;
 	Uint32 kuva_colorkey;
-	Uint8 kuva_alpha;
+	Uint8 kuva_alpha = 0;
 	SDL_Rect r1, r2;
 
 	/* Tarkistetaan kuva. */
