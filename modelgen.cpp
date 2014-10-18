@@ -83,7 +83,7 @@ Model makeCylinder(float rad, float height, int parts) {
 		m.addTriangle(1, 2*i+1, 2*(i+1)+1);
 	}
 	m.setAttr("pos", vts);
-	m.setAttr("normal", vts);
+	m.setAttr("normal", normals);
 	m.load();
 	return m;
 }
