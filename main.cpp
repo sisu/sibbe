@@ -25,6 +25,9 @@ MenuState menuState = START;
 
 GLuint startTex, menuTex;
 
+const int FREQ = 44100;
+const int SAMPLES = 512;
+
 vector<short> startMusic;
 vector<short> bgMusic;
 vector<short> solo;
@@ -118,6 +121,10 @@ void loopIter() {
 		soloVolume = curVolume;
 		SDL_UnlockAudio();
 	}
+	if (menuState == GAME && musicPos > bgMusic.size() + 2*FREQ) {
+		menuState = START;
+		musicPos = 0;
+	}
 
 	if (end) {
 		SDL_Quit();
@@ -139,9 +146,6 @@ void mainLoop() {
 #endif
 }
 
-const int FREQ = 44100;
-const int SAMPLES = 512;
-
 void callback(void* udata, Uint8* s, int len)
 {
 	(void)udata;
@@ -149,18 +153,15 @@ void callback(void* udata, Uint8* s, int len)
 	Sint16* stream = (Sint16*)s;
 
 	if (menuState==GAME) {
-		int len0 = len;
-		int rem = bgMusic.size() - musicPos;
-		len = min(len, rem);
-		memcpy(s, &bgMusic[musicPos], 2*len);
-		memset(s+2*len, 0, 2*(len0-len));
-
+		for(int i=0; i<len && musicPos+i<bgMusic.size(); ++i) {
+			stream[i] = bgMusic[musicPos + i];
+		}
 		for(int i=0; i<len && musicPos+i<solo.size(); ++i) {
 			stream[i] += soloVolume * solo[musicPos + i];
 		}
 	} else {
 		for(int i=0; i<len && musicPos+i<startMusic.size(); ++i) {
-			stream[i] += startMusic[musicPos + i];
+			stream[i] = startMusic[musicPos + i];
 		}
 	}
 	musicPos += len;
