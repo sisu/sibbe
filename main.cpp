@@ -205,6 +205,7 @@ int main(int argc, char* argv[]) {
 	bgMusic = WavReader::readUncompressedWavFile("sound/tausta.wav");
 	solo = WavReader::readUncompressedWavFile("sound/soolo.wav");
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_AUDIO);
+	SDL_ShowCursor(0);
 //	atexit(SDL_Quit);
 	screen = SDL_SetVideoMode(1600, 900, 0, SDL_OPENGL | SDL_RESIZABLE);
 	assert(screen);
