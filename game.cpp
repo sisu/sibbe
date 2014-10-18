@@ -32,6 +32,7 @@ ModelPtr markerModel;
 ModelPtr bowModel;
 ModelPtr quadModel;
 ProgramPtr basicProgram;
+ProgramPtr markerProgram;
 ProgramPtr textProgram;
 GLuint scoreTexture;
 
@@ -113,6 +114,7 @@ void initGame() {
 	bowModel = make_shared<Model>(makeCylinder(0.2, BOW_LEN, 16));
 	quadModel = make_shared<Model>(makeQuad(1.0));
 	basicProgram = make_shared<Program>(Program::fromFiles("shaders/t.vert", "shaders/t.frag"));
+	markerProgram = make_shared<Program>(Program::fromFiles("shaders/t.vert", "shaders/marker.frag"));
 	textProgram = make_shared<Program>(Program::fromFiles("shaders/text.vert", "shaders/text.frag"));
 	initText();
 	scoreTexture = makeTexture("data/sibbe100mk.jpg");
@@ -288,7 +290,7 @@ void drawFrame() {
 			iter != noteEnd; ++iter) {
 		Note& n = *iter;
 		if (n.score) continue;
-		RenderObject o(markerModel, basicProgram);
+		RenderObject o(markerModel, markerProgram);
 		Vec2 off = offset[n.string()];
 		Vec3 v = {off[0], off[1], NOTE_SPEED*(n.time - totalTime) + BOW_POS};
 		o.transform = view * translate(v);
