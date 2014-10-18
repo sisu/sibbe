@@ -10,6 +10,10 @@
 #include <fstream>
 using namespace std;
 
+double volChange = 0.4;
+double curVolume = 1.0;
+double destVolume = 1.0;
+
 namespace {
 
 const double BOW_LEN = 20;
@@ -51,6 +55,21 @@ double bowX=0, bowY=0;
 double totalTime;
 
 bool pressedKeys[32];
+
+double getDestVolume() {
+	auto iter = lower_bound(notes.begin(), notes.end(), totalTime - HIT_RANGE);
+	if (iter == notes.begin()) return 1;
+	--iter;
+	if (!iter->done) return volChange;
+	return 1.0;
+}
+
+void updateVolume(double dt) {
+	destVolume = getDestVolume();
+	if (curVolume < destVolume) curVolume = min(destVolume, curVolume + 5.0 * dt);
+	else if (curVolume > destVolume) curVolume = max(destVolume, curVolume - 2.0 * dt);
+}
+
 
 int getChosenString() {
 	if (bowY < -0.2*M_PI) return 0;
@@ -95,6 +114,7 @@ void updateGameState(double dt) {
 		if (!pressedKeys[n.key()]) continue;
 		n.done = true;
 	}
+	updateVolume(dt);
 }
 
 void moveBow(double dx, double dy) {
@@ -162,13 +182,4 @@ void drawFrame() {
 		render.add(o);
 	}
 	render.flush();
-}
-
-double getSoloVolume() {
-	return 1.0;
-	auto iter = lower_bound(notes.begin(), notes.end(), totalTime - HIT_RANGE);
-	if (iter == notes.begin()) return 1;
-	--iter;
-	if (!iter->done) return 0.5;
-	return 1.0;
 }

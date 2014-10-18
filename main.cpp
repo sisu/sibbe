@@ -13,6 +13,9 @@
 #endif
 using namespace std;
 
+extern double volChange;
+extern double curVolume;
+
 namespace {
 
 const int NOTE_KEYS[] = {
@@ -41,6 +44,7 @@ int getNoteKey(SDLKey k) {
 	}
 	return -1;
 }
+
 void loopIter() {
 	SDL_Event e;
 	while(SDL_PollEvent(&e)) {
@@ -72,9 +76,8 @@ void loopIter() {
 	drawFrame();
 	SDL_GL_SwapBuffers();
 	{
-		double vol = getSoloVolume();
 		SDL_LockAudio();
-		soloVolume = vol;
+		soloVolume = curVolume;
 		SDL_UnlockAudio();
 	}
 
@@ -132,6 +135,7 @@ SDL_AudioSpec spec = {
 	0 // userdata
 };
 
+#if 0
 void genMusic() {
 	for(int i=0; i<1<<20; ++i) {
 		int n = 1 + i/(FREQ/2) % 4;
@@ -139,10 +143,19 @@ void genMusic() {
 		bgMusic.push_back(a);
 	}
 }
+#endif
 
 }
 
-int main(/*int argc, char* argv[]*/) {
+int main(int argc, char* argv[]) {
+	for(int i=1; i<argc; ++i) {
+		string s = argv[i];
+		if (s=="-c") {
+			volChange = atof(argv[++i]);
+		} else {
+			cout<<"Unknown argument "<<s<<'\n';
+		}
+	}
 	bgMusic = WavReader::readUncompressedWavFile("sound/tausta.wav");
 	solo = WavReader::readUncompressedWavFile("sound/soolo.wav");
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_AUDIO);
