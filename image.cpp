@@ -43,8 +43,10 @@ int MySDL_glTexImage2D(SDL_Surface *kuva)
 
 	/* Otetaan talteen arvot, jotka muuttuvat funktion aikana */
 	kuva_flags = kuva->flags;
+#ifndef __EMSCRIPTEN__
 	kuva_alpha = kuva->format->alpha;
 	kuva_colorkey = kuva->format->colorkey;
+#endif
 
 	/* Luodaan apupinta halutussa formaatissa (RGBA). */
 	apu = SDL_CreateRGBSurface(SDL_SWSURFACE, kuva->w, kuva->h, 32, rmask, gmask, bmask, amask);
@@ -83,8 +85,10 @@ int MySDL_glTexImage2D(SDL_Surface *kuva)
 	/* Lähetetään kuva OpenGL:lle, tuhotaan apupinta ja palautetaan asetukset. */
 	glTexImage2D(GL_TEXTURE_2D, 0, 4, apu->w, apu->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, apu->pixels);
 	SDL_FreeSurface(apu);
+#ifndef __EMSCRIPTEN__
 	SDL_SetAlpha(kuva, kuva_flags, kuva_alpha);
 	SDL_SetColorKey(kuva, kuva_flags, kuva_colorkey);
+#endif
 	return 0;
 }
 

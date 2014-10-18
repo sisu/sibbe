@@ -185,8 +185,8 @@ void loopIter() {
 
 void mainLoop() {
 	prevTime = SDL_GetTicks()/1000.;
-	startTex = makeTexture("alku.jpg");
-	menuTex = makeTexture("valikko.jpg");
+	startTex = makeTexture("data/alku.jpg");
+	menuTex = makeTexture("data/valikko.jpg");
 	highScore.loadFromFile(scoreFile);
 	initGame();
 #ifdef __EMSCRIPTEN__

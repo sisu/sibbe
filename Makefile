@@ -21,6 +21,9 @@ all: $(BIN)
 $(BIN): $(ODIRS) $(OBJ)
 	$(CXX) -o "$@" $(OBJ) $(CXXFLAGS) $(LIBS)
 
+$(BIN).html: $(ODIRS) $(OBJ)
+	$(CXX) -o "$@" $(OBJ) $(CXXFLAGS)
+
 $(OBJ): $(ODIR)/%.o: %.cpp
 	$(CXX) "$<" -c -o "$@" $(CXXFLAGS)
 
