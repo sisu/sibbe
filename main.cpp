@@ -1,4 +1,5 @@
 #include "game.hpp"
+#include "image.hpp"
 #include "render/GL.hpp"
 #include "sound/wav_reader.hpp"
 #include <SDL/SDL.h>
@@ -18,6 +19,17 @@ extern double curVolume;
 extern GameMode gameMode;
 
 namespace {
+
+enum MenuState { START, MENU, GAME };
+MenuState menuState = START;
+
+GLuint startTex, menuTex;
+
+vector<short> startMusic;
+vector<short> bgMusic;
+vector<short> solo;
+size_t musicPos;
+
 
 const int NOTE_KEYS[] = {
 	271,
@@ -46,16 +58,35 @@ int getNoteKey(SDLKey k) {
 	return -1;
 }
 
+void handleKey(SDLKey k) {
+	if (menuState == START) {
+		if (k==SDLK_RETURN) menuState = MENU;
+	} else if (menuState == MENU) {
+		if(k==SDLK_n){					
+			newGame();
+			menuState = GAME;
+			prevTime = SDL_GetTicks() / 1000.0;
+			musicPos = 0;
+		}
+		if(k==SDLK_h){
+			//HIGHSCORES
+		}
+		if(k==SDLK_q)
+			end = 1;
+	} else {
+		if (k==SDLK_F10) end=1;
+//			cout<<"key "<<k<<'\n';
+		int note = getNoteKey(k);
+		if (note>=0) keyDown(note);
+	}
+}
+
 void loopIter() {
 	SDL_Event e;
 	while(SDL_PollEvent(&e)) {
 		if (e.type==SDL_QUIT) end=1;
 		else if (e.type==SDL_KEYDOWN) {
-			SDLKey k = e.key.keysym.sym;
-			if (k==SDLK_F10) end=1;
-//			cout<<"key "<<k<<'\n';
-			int note = getNoteKey(k);
-			if (note>=0) keyDown(note);
+			handleKey(e.key.keysym.sym);
 		} else if (e.type==SDL_KEYUP) {
 			SDLKey k = e.key.keysym.sym;
 			int note = getNoteKey(k);
@@ -71,10 +102,16 @@ void loopIter() {
 			glViewport(0,0,e.resize.w,e.resize.h);
 		}
 	}
-	double time = SDL_GetTicks()/1000.;
-	updateGameState(time - prevTime);
-	prevTime = time;
-	drawFrame();
+	if (menuState == START) {
+		drawImageFrame(startTex);
+	} else if (menuState == MENU) {
+		drawImageFrame(menuTex);
+	} else if (menuState == GAME) {
+		double time = SDL_GetTicks()/1000.;
+		updateGameState(time - prevTime);
+		prevTime = time;
+		drawFrame();
+	}
 	SDL_GL_SwapBuffers();
 	{
 		SDL_LockAudio();
@@ -89,8 +126,9 @@ void loopIter() {
 
 void mainLoop() {
 	prevTime = SDL_GetTicks()/1000.;
+	startTex = makeTexture("alku.jpg");
+	menuTex = makeTexture("valikko.jpg");
 	initGame();
-	newGame();
 #ifdef __EMSCRIPTEN__
 	emscripten_set_main_loop(loopIter, 60, true);
 #else
@@ -101,10 +139,6 @@ void mainLoop() {
 #endif
 }
 
-vector<short> bgMusic;
-vector<short> solo;
-size_t musicPos;
-
 const int FREQ = 44100;
 const int SAMPLES = 512;
 
@@ -112,17 +146,24 @@ void callback(void* udata, Uint8* s, int len)
 {
 	(void)udata;
 	len /= 2;
-	int len0 = len;
-	int rem = bgMusic.size() - musicPos;
-	len = min(len, rem);
-	memcpy(s, &bgMusic[musicPos], 2*len);
-	memset(s+2*len, 0, 2*(len0-len));
-	musicPos += len;
-
 	Sint16* stream = (Sint16*)s;
-	for(int i=0; i<len && musicPos+i<solo.size(); ++i) {
-		stream[i] += soloVolume * solo[musicPos + i];
+
+	if (menuState==GAME) {
+		int len0 = len;
+		int rem = bgMusic.size() - musicPos;
+		len = min(len, rem);
+		memcpy(s, &bgMusic[musicPos], 2*len);
+		memset(s+2*len, 0, 2*(len0-len));
+
+		for(int i=0; i<len && musicPos+i<solo.size(); ++i) {
+			stream[i] += soloVolume * solo[musicPos + i];
+		}
+	} else {
+		for(int i=0; i<len && musicPos+i<startMusic.size(); ++i) {
+			stream[i] += startMusic[musicPos + i];
+		}
 	}
+	musicPos += len;
 }
 
 SDL_AudioSpec spec = {
@@ -160,6 +201,7 @@ int main(int argc, char* argv[]) {
 			cout<<"Unknown argument "<<s<<'\n';
 		}
 	}
+	startMusic=WavReader::readUncompressedWavFile("sound/alku.wav");
 	bgMusic = WavReader::readUncompressedWavFile("sound/tausta.wav");
 	solo = WavReader::readUncompressedWavFile("sound/soolo.wav");
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_AUDIO);

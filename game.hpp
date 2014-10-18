@@ -1,4 +1,5 @@
 #pragma once
+#include <GL/gl.h>
 
 enum GameMode { HARD, INSANE };
 
@@ -9,3 +10,5 @@ void moveBow(double dx, double dy);
 void keyDown(int key);
 void keyUp(int key);
 void drawFrame();
+
+void drawImageFrame(GLuint tex);

@@ -317,3 +317,16 @@ void drawFrame() {
 	drawScore();
 	drawScoreShow();
 }
+
+void drawImageFrame(GLuint tex) {
+	render.clear();
+	gl.disable(GL_DEPTH_TEST);
+	gl.disable(GL_BLEND);
+	glBindTexture(GL_TEXTURE_2D, tex);
+	render.transform = orthoM(-1, 1, -1, 1, -1, 1);
+	RenderObject o(quadModel, textProgram);
+	o.transform = Identity();
+	o.uniform1i["texture"] = 0;
+	render.add(o);
+	render.flush();
+}
