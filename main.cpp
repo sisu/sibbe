@@ -1,5 +1,6 @@
 #include "game.hpp"
 #include "image.hpp"
+#include "fft.hpp"
 #include "render/GL.hpp"
 #include "sound/wav_reader.hpp"
 #include "random/highscore.hpp"
@@ -23,6 +24,9 @@ extern long score;
 extern bool showScoreGet;
 
 namespace {
+
+const int FFT_BUCKETS = 100;
+float fftRes[FFT_BUCKETS];
 
 enum MenuState { START, MENU, GAME, ENDING, HIGHSCORE };
 MenuState menuState = START;
@@ -68,6 +72,31 @@ int getNoteKey(SDLKey k) {
 string name;
 
 const string scoreFile = "scores.dat";
+
+void updateFFT() {
+	const int FFT_SIZE = 1024;
+	static float samples[FFT_SIZE];
+	static float zeros[FFT_SIZE];
+	static float rcos[FFT_SIZE];
+	static float rsin[FFT_SIZE];
+	for(int i=0; i<FFT_SIZE && musicPos + i < bgMusic.size(); ++i) {
+		float s = 0;
+		if (musicPos + i < bgMusic.size()) s += bgMusic[musicPos + i];
+		if (musicPos + i < solo.size()) s += soloVolume * solo[musicPos + i];
+		samples[i] = s;
+	}
+	vector<float> fsin, fcos;
+	asd_fft_f(rcos, rsin, samples, zeros, FFT_SIZE);
+	for(int i=0, j=0; i<FFT_BUCKETS; ++i) {
+		float sum = 0;
+		int end = (i+1)*FFT_SIZE/FFT_BUCKETS;
+		int cnt = end - j;
+		for(;j < end; ++j) {
+			sum += hypot(rcos[j], rsin[j]);
+		}
+		fftRes[i] = j / cnt;
+	}
+}
 
 void changeState(MenuState state) {
 	menuState = state;
@@ -160,6 +189,7 @@ void loopIter() {
 		drawImageFrame(menuTex);
 	} else if (menuState == GAME) {
 		double time = SDL_GetTicks()/1000.;
+		updateFFT();
 		updateGameState(time - prevTime);
 		prevTime = time;
 		drawFrame();
