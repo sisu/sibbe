@@ -368,6 +368,6 @@ void drawHighScore() {
 		sprintf(buf, "%lld", highScore.getPointsByRank(i));
 		drawText(buf, size, 0.2, 0.8 - 0.1*i, true);
 		string name = highScore.getNameByRank(i);
-		drawText(name.c_str(), size, -0.7, 0.8 - 0.1*i, false);
+		if (!name.empty()) drawText(name.c_str(), size, -0.7, 0.8 - 0.1*i, false);
 	}
 }
