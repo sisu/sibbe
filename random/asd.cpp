@@ -54,33 +54,8 @@ void looppi(){
 								
 					
 					if(e.key.keysym.sym==SDLK_RETURN) loop=0;
-
-					if(e.key.keysym.sym==SDLK_a) kuuntelija.putDown('a');
-					if(e.key.keysym.sym==SDLK_b) kuuntelija.putDown('b');
-					if(e.key.keysym.sym==SDLK_c) kuuntelija.putDown('c');
-					if(e.key.keysym.sym==SDLK_d) kuuntelija.putDown('d');
-					if(e.key.keysym.sym==SDLK_e) kuuntelija.putDown('e');
-					if(e.key.keysym.sym==SDLK_f) kuuntelija.putDown('f');
-					if(e.key.keysym.sym==SDLK_g) kuuntelija.putDown('g');
-					if(e.key.keysym.sym==SDLK_h) kuuntelija.putDown('h');	
-					if(e.key.keysym.sym==SDLK_i) kuuntelija.putDown('i');	
-					if(e.key.keysym.sym==SDLK_j) kuuntelija.putDown('j');	
-					if(e.key.keysym.sym==SDLK_k) kuuntelija.putDown('k');	
-					if(e.key.keysym.sym==SDLK_l) kuuntelija.putDown('l');	
-					if(e.key.keysym.sym==SDLK_m) kuuntelija.putDown('m');	
-					if(e.key.keysym.sym==SDLK_n) kuuntelija.putDown('n');	
-					if(e.key.keysym.sym==SDLK_o) kuuntelija.putDown('o');	
-					if(e.key.keysym.sym==SDLK_p) kuuntelija.putDown('p');	
-					if(e.key.keysym.sym==SDLK_q) kuuntelija.putDown('q');	
-					if(e.key.keysym.sym==SDLK_r) kuuntelija.putDown('r');	
-					if(e.key.keysym.sym==SDLK_s) kuuntelija.putDown('s');	
-					if(e.key.keysym.sym==SDLK_t) kuuntelija.putDown('t');
-					if(e.key.keysym.sym==SDLK_u) kuuntelija.putDown('u');	
-					if(e.key.keysym.sym==SDLK_v) kuuntelija.putDown('v');	
-					if(e.key.keysym.sym==SDLK_w) kuuntelija.putDown('w');	
-					if(e.key.keysym.sym==SDLK_x) kuuntelija.putDown('x');	
-					if(e.key.keysym.sym==SDLK_y) kuuntelija.putDown('y');	
-					if(e.key.keysym.sym==SDLK_z) kuuntelija.putDown('z');				
+					if(e.key.keysym.sym>='a'&&e.key.keysym.sym<='z')
+						kuuntelija.putDown(char(e.key.keysym.sym));
 			}
 		}
 		
