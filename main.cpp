@@ -81,9 +81,9 @@ void handleKey(SDLKey k) {
 		int note = getNoteKey(k);
 		if (note>=0) keyDown(note);
 		if (k==SDLK_t) {
-//			menuState = ENDING;
-			menuState = START;
-			musicPos = 0;
+			menuState = ENDING;
+//			menuState = START;
+//			musicPos = 0;
 		}
 	} else if (menuState == ENDING) {
 		if (k == SDLK_RETURN) {

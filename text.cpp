@@ -9,7 +9,7 @@ TTF_Font* font;
 
 void initText() {
 	TTF_Init();
-	font = TTF_OpenFont("data/Vera.ttf", 16);
+	font = TTF_OpenFont("data/Vera.ttf", 32);
 	if (!font) {
 		cout<<"Failure loading font "<<TTF_GetError()<<'\n';
 		assert(0);
