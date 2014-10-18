@@ -90,6 +90,7 @@ void loopIter() {
 void mainLoop() {
 	prevTime = SDL_GetTicks()/1000.;
 	initGame();
+	newGame();
 #ifdef __EMSCRIPTEN__
 	emscripten_set_main_loop(loopIter, 60, true);
 #else

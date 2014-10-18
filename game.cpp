@@ -79,7 +79,6 @@ struct ScoreShow {
 };
 vector<ScoreShow> scoreShow;
 
-int lastPressedKeyChange = 0;
 int lastKeyPressed = 0;
 
 
@@ -115,22 +114,22 @@ void initGame() {
 	quadModel = make_shared<Model>(makeQuad(1.0));
 	basicProgram = make_shared<Program>(Program::fromFiles("shaders/t.vert", "shaders/t.frag"));
 	textProgram = make_shared<Program>(Program::fromFiles("shaders/text.vert", "shaders/text.frag"));
+	initText();
+	scoreTexture = makeTexture("data/sibbe100mk.jpg");
+}
 
-#if 0
-	for(int i=0; i<100; ++i) {
-		notes.push_back({1.0+i, i%4*10, false});
-	}
-#else
+void newGame() {
+	notes.clear();
 	ifstream in("score/sisu.txt");
 	double time;
 	int note;
 	while(in>>time>>note) {
 		notes.emplace_back(2.4 * time, note);
 	}
-#endif
-
-	initText();
-	scoreTexture = makeTexture("data/sibbe100mk.jpg");
+	scoreShow.clear();
+	score = 0;
+	totalTime = 0;
+	bowX = bowY = 0;
 }
 
 void updateGameState(double dt) {
@@ -160,7 +159,7 @@ void moveBow(double dx, double dy) {
 int lastOkRealKey = -1;
 
 void keyDown(int key) {
-	lastPressedKeyChange = key - lastKeyPressed;
+	int lastPressedKeyChange = key - lastKeyPressed;
 	lastKeyPressed = key;
 	auto noteStart = lower_bound(notes.begin(), notes.end(), totalTime - HIT_RANGE);
 	auto noteEnd = lower_bound(notes.begin(), notes.end(), totalTime + HIT_RANGE);
