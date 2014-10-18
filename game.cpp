@@ -74,7 +74,7 @@ struct Note {
 };
 vector<Note> notes;
 
-double bowX=0, bowY=0;
+double bowX=0;
 
 double totalTime;
 
@@ -146,11 +146,11 @@ void updateVolume(double dt) {
 	else if (curVolume > destVolume) curVolume = max(destVolume, curVolume - 2.0 * dt);
 }
 
-
+const double BOW_MAX = 2.5;
 int getChosenString() {
-	if (bowY < -0.2*M_PI) return 0;
-	if (bowY < 0) return 1;
-	if (bowY < 0.2*M_PI) return 2;
+	if (bowX < -0.75*BOW_MAX) return 0;
+	if (bowX < 0) return 1;
+	if (bowX < 0.75*BOW_MAX) return 2;
 	return 3;
 }
 
@@ -181,7 +181,7 @@ void newGame() {
 	scoreShow.clear();
 	score = 0;
 	totalTime = 0;
-	bowX = bowY = 0;
+	bowX = 0;
 }
 
 void updateGameState(double dt) {
@@ -201,11 +201,9 @@ void updateGameState(double dt) {
 }
 
 void moveBow(double dx, double dy) {
-	bowX += 1e-2*dy;
-	bowY += 2e-3*dx;
-	bowX = clamp(bowX, -.5*BOW_LEN, .5*BOW_LEN);
-	double ylim = .25*M_PI;
-	bowY = clamp(bowY, -ylim, ylim);
+	(void)dy;
+	bowX += 8e-3*dx;
+	bowX = clamp(bowX, -BOW_MAX, BOW_MAX);
 }
 
 int lastOkRealKey = -1;
@@ -386,14 +384,17 @@ void drawFrame() {
 		render.add(o);
 	}
 	{
+		const double H0 = 0.39;
+		const double D = 0.15;
+		double x = bowX;
+		double y = H0 - D*x*x;
+
 		RenderObject o(bowModel, basicProgram);
 		Matrix4 rotateY = Rotate(M_PI*0.5, 1);
-		Matrix4 moveToMid = translate(-bowX,0,0);
-		Matrix4 rotateZ = Rotate(bowY, 2);
-		Matrix4 moveY = translate(0,1.1,3);
-		Vec3 v = {.5*BOW_LEN,1.1,BOW_POS};
-//		o.transform = view * translate(v) * rotateY;
-		o.transform = view * moveY * rotateZ * moveToMid * rotateY;
+		Matrix4 moveToMid = translate(x,y,0);
+		Matrix4 rotateZ = Rotate(atan(2*D*x), 2);
+		Matrix4 moveZ = translate(0,0,BOW_POS);
+		o.transform = view * moveZ * moveToMid * rotateZ * rotateY;
 		o.paramsv3["color"] = Vec3(0.6,0.2,0);
 		render.add(o);
 
