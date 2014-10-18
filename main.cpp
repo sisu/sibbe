@@ -31,6 +31,7 @@ SDL_Surface* screen;
 
 bool end=0;
 double prevTime;
+double soloVolume = 1.0;
 
 int getNoteKey(SDLKey k) {
 	for(size_t i=0; i<sizeof(NOTE_KEYS)/sizeof(NOTE_KEYS[0]); ++i) {
@@ -70,6 +71,12 @@ void loopIter() {
 	prevTime = time;
 	drawFrame();
 	SDL_GL_SwapBuffers();
+	{
+		double vol = getSoloVolume();
+		SDL_LockAudio();
+		soloVolume = vol;
+		SDL_UnlockAudio();
+	}
 
 	if (end) {
 		SDL_Quit();
@@ -109,7 +116,7 @@ void callback(void* udata, Uint8* s, int len)
 
 	Sint16* stream = (Sint16*)s;
 	for(int i=0; i<len && musicPos+i<solo.size(); ++i) {
-		stream[i] += solo[musicPos + i];
+		stream[i] += soloVolume * solo[musicPos + i];
 	}
 }
 
