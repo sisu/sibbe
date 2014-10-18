@@ -15,6 +15,7 @@ using namespace std;
 double volChange = 0.4;
 double curVolume = 1.0;
 double destVolume = 1.0;
+GameMode gameMode = INSANE;
 
 namespace {
 
@@ -35,9 +36,11 @@ ProgramPtr textProgram;
 GLuint scoreTexture;
 
 struct Note {
+	Note(double time, int note):time(time), note(note), done(0), score(0) {}
 	double time;
 	int note;
 	bool done;
+	bool score;
 
 	bool operator<(const Note& n) const {
 		return time < n.time;
@@ -59,8 +62,6 @@ double bowX=0, bowY=0;
 
 double totalTime;
 
-bool pressedKeys[32];
-
 long long score = 0;
 
 double randf() {
@@ -78,11 +79,16 @@ struct ScoreShow {
 };
 vector<ScoreShow> scoreShow;
 
+int lastPressedKeyChange = 0;
+int lastKeyPressed = 0;
+
+
+
 double getDestVolume() {
 	auto iter = lower_bound(notes.begin(), notes.end(), totalTime - HIT_RANGE);
 	if (iter == notes.begin()) return 1;
 	--iter;
-	if (!iter->done) return volChange;
+	if (!iter->score) return volChange;
 	return 1.0;
 }
 
@@ -119,7 +125,7 @@ void initGame() {
 	double time;
 	int note;
 	while(in>>time>>note) {
-		notes.push_back({2.4 * time, note, false});
+		notes.emplace_back(2.4 * time, note);
 	}
 #endif
 
@@ -135,19 +141,6 @@ void initGame() {
 
 void updateGameState(double dt) {
 	totalTime += dt;
-
-	auto noteEnd = lower_bound(notes.begin(), notes.end(), totalTime + HIT_RANGE);
-	int chosen = getChosenString();
-	for(auto iter = lower_bound(notes.begin(), notes.end(), totalTime - HIT_RANGE);
-			iter != noteEnd; ++iter) {
-		Note& n = *iter;
-		if (n.done) continue;
-		if (n.string() != chosen) continue;
-		if (!pressedKeys[n.key()]) continue;
-		n.done = true;
-		score += 100;
-		scoreShow.emplace_back();
-	}
 	updateVolume(dt);
 	for(size_t i=0; i<scoreShow.size(); ) {
 		ScoreShow& ss = scoreShow[i];
@@ -170,11 +163,45 @@ void moveBow(double dx, double dy) {
 	bowY = clamp(bowY, -ylim, ylim);
 }
 
+int lastOkRealKey = -1;
+
 void keyDown(int key) {
-	pressedKeys[key] = 1;
+	lastPressedKeyChange = key - lastKeyPressed;
+	lastKeyPressed = key;
+	auto noteStart = lower_bound(notes.begin(), notes.end(), totalTime - HIT_RANGE);
+	auto noteEnd = lower_bound(notes.begin(), notes.end(), totalTime + HIT_RANGE);
+	int chosen = getChosenString();
+	for(auto iter = noteStart; iter != noteEnd; ++iter) {
+		Note& n = *iter;
+		if (n.done) continue;
+		if (n.string() != chosen) continue;
+		if (gameMode <= HARD) {
+			if (iter != notes.begin()) {
+				if (lastPressedKeyChange) n.done = true;
+				auto prev = iter;
+				--prev;
+				int change = n.key() - prev->key();
+				if (change == 0) {
+					if (lastOkRealKey!=n.key() || lastPressedKeyChange) continue;
+				} else {
+					if (lastPressedKeyChange==0 || (lastPressedKeyChange>0)!=(change>0)) continue;
+				}
+			}
+		} else {
+			if (n.key() != key) continue;
+		}
+		n.done = true;
+		n.score = true;
+		score += 100;
+		scoreShow.emplace_back();
+		lastOkRealKey = n.key();
+
+		for(auto i=noteStart; i!=iter; ++i) i->done = true;
+		break;
+	}
 }
 void keyUp(int key) {
-	pressedKeys[key] = 0;
+	(void)key;
 }
 
 void drawScore() {
@@ -257,12 +284,13 @@ void drawFrame() {
 	for(auto iter = lower_bound(notes.begin(), notes.end(), totalTime - SHOW_AFTER * NOTE_SPEED);
 			iter != noteEnd; ++iter) {
 		Note& n = *iter;
-		if (n.done) continue;
+		if (n.score) continue;
 		RenderObject o(markerModel, basicProgram);
 		Vec2 off = offset[n.string()];
 		Vec3 v = {off[0], off[1], NOTE_SPEED*(n.time - totalTime) + BOW_POS};
 		o.transform = view * translate(v);
 		o.paramsv3["color"] = HSV(n.key() / 10.0, 1.0, 1.0);
+		if (n.done) o.paramsv3["color"] = Vec3(0.3,0,0);
 		render.add(o);
 	}
 	{

@@ -1,5 +1,7 @@
 #pragma once
 
+enum GameMode { HARD, INSANE };
+
 void initGame();
 void updateGameState(double dt);
 void moveBow(double dx, double dy);

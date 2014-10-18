@@ -15,6 +15,7 @@ using namespace std;
 
 extern double volChange;
 extern double curVolume;
+extern GameMode gameMode;
 
 namespace {
 
@@ -152,6 +153,8 @@ int main(int argc, char* argv[]) {
 		string s = argv[i];
 		if (s=="-c") {
 			volChange = atof(argv[++i]);
+		} else if (s=="-h") {
+			gameMode = HARD;
 		} else {
 			cout<<"Unknown argument "<<s<<'\n';
 		}
