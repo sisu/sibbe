@@ -130,13 +130,7 @@ void initGame() {
 #endif
 
 	initText();
-	{
-		glGenTextures(1, &scoreTexture);
-		glBindTexture(GL_TEXTURE_2D, scoreTexture);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		loadImage("data/sibbe100mk.jpg");
-	}
+	scoreTexture = makeTexture("data/sibbe100mk.jpg");
 }
 
 void updateGameState(double dt) {
