@@ -166,7 +166,7 @@ int getChosenString() {
 }
 
 void initGame() {
-	markerModel = make_shared<Model>(makeCylinder(0.3, 0.3, 16));
+	markerModel = make_shared<Model>(makeCylinder(0.2, 0.2, 16));
 	bowModel = make_shared<Model>(makeCylinder(0.15, BOW_LEN, 16));
 	bowHairModel = make_shared<Model>(makeQuad(0.15, .5*BOW_LEN));
 	quadModel = make_shared<Model>(makeQuad(1.0, 1.0));
@@ -393,7 +393,7 @@ void drawFrame() {
 		render.add(o);
 	}
 	{
-		const double H0 = 0.39;
+		const double H0 = 0.95;
 		const double D = 0.15;
 		double x = bowX;
 		double y = H0 - D*x*x;
@@ -408,7 +408,7 @@ void drawFrame() {
 		render.add(o);
 
 		RenderObject o2(bowHairModel, basicProgram);
-		o2.transform = o.transform * Rotate(0.5*M_PI, 0) * translate(-1,0,0);
+		o2.transform = o.transform * Rotate(0.5*M_PI, 0) * translate(0,0,-.5);
 		o2.paramsv3["color"] = Vec3(0.8,0.8,0.8);
 		render.add(o2);
 	}
