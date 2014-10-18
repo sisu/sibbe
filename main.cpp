@@ -72,6 +72,8 @@ int getNoteKey(SDLKey k) {
 string name;
 
 const string scoreFile = "scores.dat";
+size_t nextFFTPos;
+const int FFT_UPDATE_INTERVAL = FREQ / 40;
 
 void updateFFT() {
 	const int FFT_SIZE = 4096;
@@ -98,18 +100,25 @@ void updateFFT() {
 	}
 }
 
+void clearMusicPos() {
+	SDL_LockAudio();
+	musicPos = 0;
+	nextFFTPos = 0;
+	SDL_UnlockAudio();
+}
+
 void changeState(MenuState state) {
 	menuState = state;
 	switch(state) {
 		case START:
-			musicPos = 0;
+			clearMusicPos();
 			break;
 		case MENU:
 			break;
 		case GAME:
 			newGame();
 			prevTime = SDL_GetTicks() / 1000.0;
-			musicPos = 0;
+			clearMusicPos();
 			break;
 		case ENDING:
 			name.clear();
@@ -189,7 +198,6 @@ void loopIter() {
 		drawImageFrame(menuTex);
 	} else if (menuState == GAME) {
 		double time = SDL_GetTicks()/1000.;
-		updateFFT();
 		updateGameState(time - prevTime);
 		prevTime = time;
 		drawFrame();
@@ -199,10 +207,15 @@ void loopIter() {
 		drawHighScore();
 	}
 	SDL_GL_SwapBuffers();
-	{
+	if (menuState == GAME) {
 		SDL_LockAudio();
 		soloVolume = curVolume;
+		size_t pos = musicPos;
 		SDL_UnlockAudio();
+		while (pos >= nextFFTPos) {
+			updateFFT();
+			nextFFTPos += FFT_UPDATE_INTERVAL;
+		}
 	}
 	if (menuState == GAME && musicPos > bgMusic.size() + 2*FREQ) {
 		changeState(ENDING);
