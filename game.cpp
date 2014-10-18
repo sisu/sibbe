@@ -117,6 +117,20 @@ void initBG()
 	bg.vBuffer.load();
 }
 
+struct String
+{
+  void init();
+
+  shared_ptr<Model> stringModel;
+  shared_ptr<Program> program;
+} violinString;
+
+void String::init()
+{
+  stringModel = make_shared<Model>(makeCylinder(0.05, 200, 16));
+  program = make_shared<Program>(Program::fromFiles("shaders/string.vert", "shaders/string.frag"));
+}
+
 
 double getDestVolume() {
 	auto iter = lower_bound(notes.begin(), notes.end(), totalTime - HIT_RANGE);
@@ -143,7 +157,6 @@ int getChosenString() {
 }
 
 void initGame() {
-	stringModel = make_shared<Model>(makeCylinder(0.05, 200, 16));
 	markerModel = make_shared<Model>(makeCylinder(0.3, 0.3, 16));
 	bowModel = make_shared<Model>(makeCylinder(0.15, BOW_LEN, 16));
 	bowHairModel = make_shared<Model>(makeQuad(0.15, .5*BOW_LEN));
@@ -153,6 +166,7 @@ void initGame() {
 	textProgram = make_shared<Program>(Program::fromFiles("shaders/text.vert", "shaders/text.frag"));
 	initBG();
 	initText();
+	violinString.init();
 	scoreTexture = makeTexture("data/sibbe100mk.jpg");
 }
 
@@ -341,7 +355,7 @@ void drawFrame() {
 	int idx=-1;
 	for(Vec2 off : offset) {
 		++idx;
-		RenderObject o(stringModel, basicProgram);
+		RenderObject o(violinString.stringModel, violinString.program);
 //		obj.transform = translate(0,0,-5);
 		o.transform = view * translate(off);
 		if (idx == chosen) {

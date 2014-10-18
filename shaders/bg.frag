@@ -5,24 +5,7 @@ precision highp float;
 uniform sampler2D fft;
 
 varying vec2 uv;
-/*
-vec4 treeCol(vec2 uv)
-{
-  vec4 sum = vec4(0,0);
-  float t = clamp(texture2D(fft,uv).r,0, 1);
 
-  for(int i = 0; i < 20; ++i) {
-    vec3 pos = vec3(uv.x, t, uv.y);
-
-    if(sum.a > 0.99)
-      break;
-
-    vec4 col = mapTrees(pos);
-    col.xyz = mix(col.xyz, bgcol, 1.0 - exp(-0.0018*t*t));
-
-  }
-}
-*/
 void main() {
   float samplePoint = uv.x*0.4 + 0.2;
  
