@@ -32,9 +32,10 @@ void HighScore::loadFromFile(string file_name){
         }
 
         if(!(fin>>points[i])){
-            names[i]="-";
-            points[i]=-1;
-            continue;
+            for(; i<10; i++)
+                names[i]="-",points[i]=-1;
+            fin.close();
+            return;
         }
     }
     fin.close();
