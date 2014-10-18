@@ -20,7 +20,7 @@ extern GameMode gameMode;
 
 namespace {
 
-enum MenuState { START, MENU, GAME };
+enum MenuState { START, MENU, GAME, ENDING };
 MenuState menuState = START;
 
 GLuint startTex, menuTex;
@@ -62,6 +62,7 @@ int getNoteKey(SDLKey k) {
 }
 
 void handleKey(SDLKey k) {
+	if (k==SDLK_F10) end=1;
 	if (menuState == START) {
 		if (k==SDLK_RETURN) menuState = MENU;
 	} else if (menuState == MENU) {
@@ -76,13 +77,22 @@ void handleKey(SDLKey k) {
 		}
 		if(k==SDLK_q)
 			end = 1;
-	} else {
-		if (k==SDLK_F10) end=1;
-//			cout<<"key "<<k<<'\n';
+	} else if (menuState == GAME) {
 		int note = getNoteKey(k);
 		if (note>=0) keyDown(note);
+		if (k==SDLK_t) {
+//			menuState = ENDING;
+			menuState = START;
+			musicPos = 0;
+		}
+	} else if (menuState == ENDING) {
+		if (k == SDLK_RETURN) {
+			menuState = START;
+			musicPos = 0;
+		}
 	}
 }
+int fullscreen = SDL_FULLSCREEN;
 
 void loopIter() {
 	SDL_Event e;
@@ -101,7 +111,7 @@ void loopIter() {
 				SDL_WarpMouse(midx, midy);
 			}
 		} else if (e.type == SDL_VIDEORESIZE) {
-			screen = SDL_SetVideoMode(e.resize.w, e.resize.h, 0, SDL_OPENGL | SDL_RESIZABLE);
+			screen = SDL_SetVideoMode(e.resize.w, e.resize.h, 0, SDL_OPENGL | SDL_RESIZABLE | fullscreen);
 			glViewport(0,0,e.resize.w,e.resize.h);
 		}
 	}
@@ -114,6 +124,8 @@ void loopIter() {
 		updateGameState(time - prevTime);
 		prevTime = time;
 		drawFrame();
+	} else if (menuState == ENDING) {
+		drawEnding();
 	}
 	SDL_GL_SwapBuffers();
 	{
@@ -122,6 +134,7 @@ void loopIter() {
 		SDL_UnlockAudio();
 	}
 	if (menuState == GAME && musicPos > bgMusic.size() + 2*FREQ) {
+//		menuState = ENDING;
 		menuState = START;
 		musicPos = 0;
 	}
@@ -159,7 +172,7 @@ void callback(void* udata, Uint8* s, int len)
 		for(int i=0; i<len && musicPos+i<solo.size(); ++i) {
 			stream[i] += soloVolume * solo[musicPos + i];
 		}
-	} else {
+	} else if (menuState == START || menuState == MENU) {
 		for(int i=0; i<len && musicPos+i<startMusic.size(); ++i) {
 			stream[i] = startMusic[musicPos + i];
 		}
@@ -200,6 +213,8 @@ int main(int argc, char* argv[]) {
 			gameMode = HARD;
 		} else if (s=="-i") {
 			gameMode = INSANE;
+		} else if (s=="-w") {
+			fullscreen = 0;
 		} else {
 			cout<<"Unknown argument "<<s<<'\n';
 		}
@@ -210,7 +225,7 @@ int main(int argc, char* argv[]) {
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_AUDIO);
 	SDL_ShowCursor(0);
 //	atexit(SDL_Quit);
-	screen = SDL_SetVideoMode(1600, 900, 0, SDL_OPENGL | SDL_RESIZABLE);
+	screen = SDL_SetVideoMode(1600, 900, 0, SDL_OPENGL | SDL_RESIZABLE | fullscreen);
 	assert(screen);
 //	genMusic();
 	SDL_OpenAudio(&spec, 0);

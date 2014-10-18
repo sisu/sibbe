@@ -10,5 +10,6 @@ void moveBow(double dx, double dy);
 void keyDown(int key);
 void keyUp(int key);
 void drawFrame();
+void drawEnding();
 
 void drawImageFrame(GLuint tex);

@@ -199,7 +199,8 @@ void keyUp(int key) {
 	(void)key;
 }
 
-void drawScore() {
+#if 1
+void drawText(const char* str, double height, double x, double y, bool right) {
 	gl.disable(GL_DEPTH_TEST);
 	gl.enable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -214,18 +215,16 @@ void drawScore() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	int w,h;
-	char buf[64];
-	sprintf(buf, "%lld", score);
-	writeToTexture(buf, &w, &h);
+	writeToTexture(str, &w, &h);
 
 #endif
 #if 1
 	{
 		RenderObject o(quadModel, textProgram);
-		double hh = 0.1;
-		double ww = hh*w/h;
-		Matrix4 move = translate(1-ww, 1-hh);
-		o.transform = move * scale(ww, hh);
+		double width = height*w/h;
+//		Matrix4 move = translate(1-ww, 1-hh);
+		Matrix4 move = translate(right ? x-width : x+width, y-height);
+		o.transform = move * scale(width, height);
 		o.uniform1i["texture"] = 0;
 		render.add(o);
 	}
@@ -233,6 +232,13 @@ void drawScore() {
 	render.flush();
 
 	glDeleteTextures(1, &tex);
+}
+#endif
+
+void drawScore() {
+	char buf[64];
+	sprintf(buf, "%lld", score);
+	drawText(buf, 0.1, 1.0, 1.0, true);
 }
 
 void drawScoreShow() {
@@ -331,4 +337,14 @@ void drawImageFrame(GLuint tex) {
 	o.uniform1i["texture"] = 0;
 	render.add(o);
 	render.flush();
+}
+
+void drawEnding() {
+	render.clear();
+	gl.disable(GL_DEPTH_TEST);
+	gl.enable(GL_BLEND);
+
+	char buf[64];
+	sprintf(buf, "%lld", score);
+	drawText(buf, 0.3, 0.5, 0.5, false);
 }
