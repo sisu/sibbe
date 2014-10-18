@@ -95,9 +95,7 @@ void updateFFT() {
 			sum += hypot(rcos[j], rsin[j]);
 		}
 		fftRes[i] = sum / (cnt * FFT_SIZE);
-		cout<<fftRes[i]<<' ';
 	}
-	cout<<'\n';
 }
 
 void changeState(MenuState state) {
