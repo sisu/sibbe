@@ -97,3 +97,12 @@ void loadImage(const char* file) {
 	assert(!res);
 	SDL_FreeSurface(img);
 }
+GLuint makeTexture(const char* file) {
+	GLuint tex;
+	glGenTextures(1, &tex);
+	glBindTexture(GL_TEXTURE_2D, tex);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	loadImage(file);
+	return tex;
+}

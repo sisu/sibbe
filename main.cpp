@@ -15,6 +15,7 @@ using namespace std;
 
 extern double volChange;
 extern double curVolume;
+extern GameMode gameMode;
 
 namespace {
 
@@ -51,7 +52,7 @@ void loopIter() {
 		if (e.type==SDL_QUIT) end=1;
 		else if (e.type==SDL_KEYDOWN) {
 			SDLKey k = e.key.keysym.sym;
-			if (k==SDLK_ESCAPE) end=1;
+			if (k==SDLK_F10) end=1;
 //			cout<<"key "<<k<<'\n';
 			int note = getNoteKey(k);
 			if (note>=0) keyDown(note);
@@ -89,6 +90,7 @@ void loopIter() {
 void mainLoop() {
 	prevTime = SDL_GetTicks()/1000.;
 	initGame();
+	newGame();
 #ifdef __EMSCRIPTEN__
 	emscripten_set_main_loop(loopIter, 60, true);
 #else
@@ -152,6 +154,8 @@ int main(int argc, char* argv[]) {
 		string s = argv[i];
 		if (s=="-c") {
 			volChange = atof(argv[++i]);
+		} else if (s=="-h") {
+			gameMode = HARD;
 		} else {
 			cout<<"Unknown argument "<<s<<'\n';
 		}
