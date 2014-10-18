@@ -31,8 +31,8 @@ int WavReader::nextWavSample(ifstream& in, int size){
     return ret;
 }
 
-vector<short> WavReader::invalidFileFormatErrorMSG(){
-    cerr<<"Problem with file format, please make sure that the file is a correct and uncompressed .wav file!"<<endl;
+static vector<short> invalidFileFormatErrorMSG(string msg){
+    cerr<<"Problem with file format, please make sure that the file is a correct and uncompressed .wav file!"<<" ; "<<msg<<endl;
 	abort();
     return vector<short>();
 }
@@ -44,26 +44,26 @@ vector<short> WavReader::readUncompressedWavFile(string file_name){
 
     char ChunkID[5]={};
     fin.read(ChunkID, 4);
-    if(string(ChunkID)!="RIFF") return invalidFileFormatErrorMSG();
+    if(string(ChunkID)!="RIFF") return invalidFileFormatErrorMSG("RIFF "+file_name);
 
     char ChunkSize[5] = {};
     fin.read(ChunkSize, 4);
 
     char Format[5] = {};
     fin.read(Format, 4);
-    if(string(Format)!="WAVE") return invalidFileFormatErrorMSG();
+    if(string(Format)!="WAVE") return invalidFileFormatErrorMSG("WAVE");
 
     char subChunk1ID[5] = {};
     fin.read(subChunk1ID,4);
-    if(string(subChunk1ID)!="fmt ") return invalidFileFormatErrorMSG();
+    if(string(subChunk1ID)!="fmt ") return invalidFileFormatErrorMSG("fmt ");
 
     char subChunk1Size[5] = {};
     fin.read(subChunk1Size,4);
-    if(to_int(subChunk1Size,4)!=16) return invalidFileFormatErrorMSG();
+    if(to_int(subChunk1Size,4)!=16) return invalidFileFormatErrorMSG("subchunk");
 
     char audioFormat[3] = {};
     fin.read(audioFormat,2);
-    if(to_int(audioFormat,2)!=1) return invalidFileFormatErrorMSG();
+    if(to_int(audioFormat,2)!=1) return invalidFileFormatErrorMSG("audioformat");
 
     char numOfChannels[3] = {};
     fin.read(numOfChannels,2);
@@ -84,11 +84,11 @@ vector<short> WavReader::readUncompressedWavFile(string file_name){
     int bits_per_sample=to_int(bitsPerSample,2);
 
     if(to_int(byteRate,4)!=to_int(sampleRate,4)*numberOfChannels*to_int(bitsPerSample,2)/8)
-        return invalidFileFormatErrorMSG();
+        return invalidFileFormatErrorMSG("byterate");
 
     char subChunk2ID[5] = {};
     fin.read(subChunk2ID,4);
-    if(string(subChunk2ID)!="data") return invalidFileFormatErrorMSG();
+    if(string(subChunk2ID)!="data") return invalidFileFormatErrorMSG("data");
 
     char subChunk2Size[5] = {};
     fin.read(subChunk2Size,4);
