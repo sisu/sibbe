@@ -142,9 +142,9 @@ int getChosenString() {
 }
 
 void initGame() {
-	stringModel = make_shared<Model>(makeCylinder(0.1, 100, 16));
+	stringModel = make_shared<Model>(makeCylinder(0.05, 100, 16));
 	markerModel = make_shared<Model>(makeCylinder(0.3, 0.3, 16));
-	bowModel = make_shared<Model>(makeCylinder(0.2, BOW_LEN, 16));
+	bowModel = make_shared<Model>(makeCylinder(0.15, BOW_LEN, 16));
 	quadModel = make_shared<Model>(makeQuad(1.0));
 	basicProgram = make_shared<Program>(Program::fromFiles("shaders/t.vert", "shaders/t.frag"));
 	markerProgram = make_shared<Program>(Program::fromFiles("shaders/t.vert", "shaders/marker.frag"));
@@ -343,9 +343,9 @@ void drawFrame() {
 //		obj.transform = translate(0,0,-5);
 		o.transform = view * translate(off);
 		if (idx == chosen) {
-			o.paramsv3["color"] = Vec3(1,0.4,0.2);
+			o.paramsv3["color"] = Vec3(1,1.0,0.2);
 		} else {
-			o.paramsv3["color"] = Vec3(0.7,0.2,0);
+			o.paramsv3["color"] = Vec3(0.8,0.8,0.8);
 		}
 		render.add(o);
 	}
