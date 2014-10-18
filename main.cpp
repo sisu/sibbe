@@ -89,13 +89,15 @@ void updateFFT() {
 	asd_fft_f(rcos, rsin, samples, zeros, FFT_SIZE);
 	for(int i=0, j=0; i<FFT_BUCKETS; ++i) {
 		float sum = 0;
-		int end = (i+1)*FFT_SIZE/FFT_BUCKETS;
+		int end = (i+1)*(FFT_SIZE/2)/FFT_BUCKETS;
 		int cnt = end - j;
 		for(;j < end; ++j) {
 			sum += hypot(rcos[j], rsin[j]);
 		}
-		fftRes[i] = j / cnt;
+		fftRes[i] = sum / (cnt * FFT_SIZE);
+		cout<<fftRes[i]<<' ';
 	}
+	cout<<'\n';
 }
 
 void changeState(MenuState state) {
