@@ -9,6 +9,7 @@ struct RenderObject {
 
 	Matrix4 transform;
 	std::map<std::string, Vec3> paramsv3;
+	std::map<std::string, int> uniform1i;
 
 	ModelPtr model;
 	ProgramPtr program;

@@ -30,6 +30,7 @@ struct Buffer {
 
 	void load(GLenum usage = GL_STATIC_DRAW);
 	void bind(GLuint prog);
+	void unbind(GLuint prog);
 
 	template<class T>
 	void add(const vector<T>& arr, std::string name, int components) {

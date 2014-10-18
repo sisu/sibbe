@@ -1,6 +1,7 @@
 #include "game.hpp"
 #include "color.hpp"
 #include "modelgen.hpp"
+#include "text.hpp"
 #include "render/Model.hpp"
 #include "render/projection.hpp"
 #include "render/Renderer.hpp"
@@ -27,7 +28,9 @@ Renderer render;
 ModelPtr stringModel;
 ModelPtr markerModel;
 ModelPtr bowModel;
+ModelPtr quadModel;
 ProgramPtr basicProgram;
+ProgramPtr textProgram;
 
 struct Note {
 	double time;
@@ -55,6 +58,8 @@ double bowX=0, bowY=0;
 double totalTime;
 
 bool pressedKeys[32];
+
+long long score = 0;
 
 double getDestVolume() {
 	auto iter = lower_bound(notes.begin(), notes.end(), totalTime - HIT_RANGE);
@@ -84,8 +89,9 @@ void initGame() {
 	stringModel = make_shared<Model>(makeCylinder(0.1, 100, 16));
 	markerModel = make_shared<Model>(makeCylinder(0.3, 0.3, 16));
 	bowModel = make_shared<Model>(makeCylinder(0.2, BOW_LEN, 16));
+	quadModel = make_shared<Model>(makeQuad(1.0));
 	basicProgram = make_shared<Program>(Program::fromFiles("shaders/t.vert", "shaders/t.frag"));
-	render.transform = perspectiveM(1.0, 4.0/3.0, 0.1, 1000);
+	textProgram = make_shared<Program>(Program::fromFiles("shaders/text.vert", "shaders/text.frag"));
 
 #if 0
 	for(int i=0; i<100; ++i) {
@@ -99,6 +105,8 @@ void initGame() {
 		notes.push_back({2.4 * time, note, false});
 	}
 #endif
+
+	initText();
 }
 
 void updateGameState(double dt) {
@@ -113,6 +121,7 @@ void updateGameState(double dt) {
 		if (n.string() != chosen) continue;
 		if (!pressedKeys[n.key()]) continue;
 		n.done = true;
+		score += 100;
 	}
 	updateVolume(dt);
 }
@@ -132,9 +141,46 @@ void keyUp(int key) {
 	pressedKeys[key] = 0;
 }
 
+void drawScore() {
+	gl.disable(GL_DEPTH_TEST);
+	gl.enable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	render.transform = orthoM(-1, 1, -1, 1, -1, 1);
+
+
+#if 1
+	GLuint tex;
+	glGenTextures(1, &tex);
+	glBindTexture(GL_TEXTURE_2D, tex);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	int w,h;
+	char buf[64];
+	sprintf(buf, "%lld", score);
+	writeToTexture(buf, &w, &h);
+#endif
+#if 1
+	{
+		RenderObject o(quadModel, textProgram);
+		double hh = 0.1;
+		double ww = hh*w/h;
+		Matrix4 move = translate(1-ww, 1-hh);
+		o.transform = move * scale(ww, hh);
+		o.uniform1i["texture"] = 0;
+		render.add(o);
+	}
+#endif
+	render.flush();
+
+	glDeleteTextures(1, &tex);
+}
+
 void drawFrame() {
 	render.clear();
 	gl.enable(GL_DEPTH_TEST);
+	gl.disable(GL_BLEND);
+	render.transform = perspectiveM(1.0, 4.0/3.0, 0.1, 1000);
 //	gl.disable(GL_CULL_FACE);
 //	Matrix4 view = Matrix4(translate(0,3,-20)) * Rotate(-M_PI*.125, 0);
 	Matrix4 view = Matrix4(scale(1,1,-1)) * Matrix4(translate(0,-3,5)) * Rotate(M_PI*0.05, 0);
@@ -182,4 +228,6 @@ void drawFrame() {
 		render.add(o);
 	}
 	render.flush();
+
+	drawScore();
 }

@@ -12,7 +12,7 @@ CXXFLAGS:=$(BASEFLAGS) $(DFLAGS)
 #CXXFLAGS:=$(BASEFLAGS) $(OFLAGS)
 CXX=clang++
 GLLIBS:=-lGL -lGLU
-LIBS:=$(shell sdl-config --libs) $(GLLIBS)
+LIBS:=$(shell sdl-config --libs) $(GLLIBS) -lSDL_ttf
 
 .PHONY: all clean
 

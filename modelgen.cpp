@@ -41,8 +41,15 @@ Model makeQuad(float size) {
 		{1,1},
 		{-1,1},
 	};
+	Vec2 tcoord[] = {
+		{0,0},
+		{1,0},
+		{1,1},
+		{0,1},
+	};
 	for(int i=0; i<4; ++i) vts[i]*=size;
 	m.setAttr("pos", vts, 4);
+	m.setAttr("tcoord", tcoord, 4);
 	Vec3 n = {0,0,1};
 	Vec3 ns[] = {n,n,n,n};
 	m.setAttr("normal", ns, 4);

@@ -42,6 +42,13 @@ void Renderer::draw(const RenderObject& o) {
 		if (id>=0) glVertexAttrib3fv(id, &i.second[0]);
 		CHECK_GL();
 	}
+#if 1
+	for(const auto& i: o.uniform1i) {
+		GLint id = glGetUniformLocation(o.program->id, i.first.c_str());
+		if (id>=0) glUniform1i(id, i.second);
+		CHECK_GL();
+	}
+#endif
 
 	assert(o.model);
 	Model& m = *o.model;
@@ -54,4 +61,5 @@ void Renderer::draw(const RenderObject& o) {
 //	glDrawElements(GL_TRIANGLES, m.indices.size(), GL_UNSIGNED_SHORT, &m.indices[0]);
 //	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 //	glDrawArrays(GL_TRIANGLES, 0, 3);
+	m.unbind(o.program->id);
 }

@@ -40,3 +40,10 @@ void Buffer::bind(GLuint prog) {
 		glVertexAttribPointer(idx, sizes[i], GL_FLOAT, 0, 0, (void*)index[i]);
 	}
 }
+void Buffer::unbind(GLuint prog) {
+	for(const string& name: names) {
+		GLint idx = glGetAttribLocation(prog, name.c_str());
+		if (idx<0) continue;
+		glDisableVertexAttribArray(idx);
+	}
+}

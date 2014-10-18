@@ -36,6 +36,10 @@ struct Model {
 #endif
 
 	void bind(GLuint prog);
+	void unbind(GLuint prog) {
+		vbuf.unbind(prog);
+		ibuf.unbind(prog);
+	}
 	void load();
 
 	template<int N>
