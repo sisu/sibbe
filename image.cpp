@@ -31,15 +31,6 @@ int MySDL_glTexImage2D(SDL_Surface *kuva)
 	if (!kuva || !kuva->w || !kuva->h) {
 		return -1;
 	}
-	/* OpenGL:ää varten sivun pitää olla kahden potenssi. */
-#if 0
-	if (kuva->w > 1 && (kuva->w & (kuva->w - 1))) {
-		return -1;
-	}
-	if (kuva->h > 1 && (kuva->h & (kuva->h - 1))) {
-		return -1;
-	}
-#endif
 
 	/* Otetaan talteen arvot, jotka muuttuvat funktion aikana */
 	kuva_flags = kuva->flags;

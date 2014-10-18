@@ -12,13 +12,6 @@ void Model::bind(GLuint prog) {
 	CHECK_GL();
 //	LOGI("setting vertex pointer %d\n", vbuf.index[0]);
 //	glBufferData(GL_ARRAY_BUFFER, verts.size*sizeof(Vec3), &verts[0], GL_STATIC_DRAW);
-#if 0
-	gl.vertexPointer(3, GL_FLOAT, sizeof(Vec3), (void*)vbuf.index[0]);
-	if (vbuf.size(1))
-		gl.normalPointer(GL_FLOAT, sizeof(Vec3), (void*)vbuf.index[1]);
-	if (vbuf.size(2))
-		gl.texCoordPointer(2, GL_FLOAT, sizeof(Vec2), (void*)vbuf.index[2]);
-#endif
 
 	ibuf.bind(0);
 }
