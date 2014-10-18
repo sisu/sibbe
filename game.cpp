@@ -19,6 +19,7 @@ double destVolume = 1.0;
 GameMode gameMode = HARD;
 HighScore highScore;
 long long score = 0;
+bool showScoreGet = 0;
 
 namespace {
 
@@ -189,7 +190,7 @@ void keyDown(int key) {
 		n.done = true;
 		n.score = true;
 		score += 100;
-		scoreShow.emplace_back();
+		if (showScoreGet) scoreShow.emplace_back();
 		lastOkRealKey = n.key();
 
 		for(auto i=noteStart; i!=iter; ++i) i->done = true;

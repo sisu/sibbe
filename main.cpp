@@ -20,6 +20,7 @@ extern double curVolume;
 extern GameMode gameMode;
 extern HighScore highScore;
 extern long score;
+extern bool showScoreGet;
 
 namespace {
 
@@ -111,6 +112,8 @@ void handleKey(SDLKey k) {
 		if (k==SDLK_t) {
 			changeState(ENDING);
 			name.clear();
+		} else if (k==SDLK_u) {
+			showScoreGet = !showScoreGet;
 		}
 	} else if (menuState == ENDING) {
 		if (k == SDLK_RETURN) {
