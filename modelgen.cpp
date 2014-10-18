@@ -33,7 +33,7 @@ Model makeCube(float size) {
 	m.load();
 	return m;
 }
-Model makeQuad(float size) {
+Model makeQuad(float width, float height) {
 	Model m;
 	Vec2 vts[] = {
 		{-1,-1},
@@ -47,7 +47,10 @@ Model makeQuad(float size) {
 		{1,1},
 		{0,1},
 	};
-	for(int i=0; i<4; ++i) vts[i]*=size;
+	for(int i=0; i<4; ++i) {
+		vts[i][0]*=width;
+		vts[i][1]*=height;
+	}
 	m.setAttr("pos", vts, 4);
 	m.setAttr("tcoord", tcoord, 4);
 	Vec3 n = {0,0,1};
@@ -66,8 +69,8 @@ Model makeCylinder(float rad, float height, int parts) {
 	for(int i=0; i<parts; ++i) {
 		double t = 2*M_PI*i/parts;
 		double x = cos(t), y = sin(t);
-		vts.emplace_back(rad*x,rad*y,0);
-		vts.emplace_back(rad*x,rad*y,height);
+		vts.emplace_back(rad*x,rad*y,-.5f*height);
+		vts.emplace_back(rad*x,rad*y,.5f*height);
 		normals.emplace_back(x,y,0);
 		normals.emplace_back(x,y,0);
 		int low=2*i, low2=2*(i+1)%parts;

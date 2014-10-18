@@ -41,6 +41,7 @@ Renderer render;
 ModelPtr stringModel;
 ModelPtr markerModel;
 ModelPtr bowModel;
+ModelPtr bowHairModel;
 ModelPtr quadModel;
 ProgramPtr basicProgram;
 ProgramPtr markerProgram;
@@ -142,10 +143,11 @@ int getChosenString() {
 }
 
 void initGame() {
-	stringModel = make_shared<Model>(makeCylinder(0.05, 100, 16));
+	stringModel = make_shared<Model>(makeCylinder(0.05, 200, 16));
 	markerModel = make_shared<Model>(makeCylinder(0.3, 0.3, 16));
 	bowModel = make_shared<Model>(makeCylinder(0.15, BOW_LEN, 16));
-	quadModel = make_shared<Model>(makeQuad(1.0));
+	bowHairModel = make_shared<Model>(makeQuad(0.15, .5*BOW_LEN));
+	quadModel = make_shared<Model>(makeQuad(1.0, 1.0));
 	basicProgram = make_shared<Program>(Program::fromFiles("shaders/t.vert", "shaders/t.frag"));
 	markerProgram = make_shared<Program>(Program::fromFiles("shaders/t.vert", "shaders/marker.frag"));
 	textProgram = make_shared<Program>(Program::fromFiles("shaders/text.vert", "shaders/text.frag"));
@@ -372,7 +374,7 @@ void drawFrame() {
 	{
 		RenderObject o(bowModel, basicProgram);
 		Matrix4 rotateY = Rotate(M_PI*0.5, 1);
-		Matrix4 moveToMid = translate(.5*BOW_LEN - bowX,0,0);
+		Matrix4 moveToMid = translate(-bowX,0,0);
 		Matrix4 rotateZ = Rotate(bowY, 2);
 		Matrix4 moveY = translate(0,1.1,3);
 		Vec3 v = {.5*BOW_LEN,1.1,BOW_POS};
@@ -380,6 +382,11 @@ void drawFrame() {
 		o.transform = view * moveY * rotateZ * moveToMid * rotateY;
 		o.paramsv3["color"] = Vec3(0.6,0.2,0);
 		render.add(o);
+
+		RenderObject o2(bowHairModel, basicProgram);
+		o2.transform = o.transform * Rotate(0.5*M_PI, 0) * translate(-1,0,0);
+		o2.paramsv3["color"] = Vec3(0.8,0.8,0.8);
+		render.add(o2);
 	}
 	render.flush();
 
