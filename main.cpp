@@ -106,7 +106,8 @@ void updateFFT(size_t mpos) {
 		for(;j < end; ++j) {
 			sum += hypot(rcos[j], rsin[j]);
 		}
-		fftRes[i] = 0.9f*fftRes[i] + 0.1f*sum / (cnt * FFT_SIZE);
+		const float smooth = 0.95;
+		fftRes[i] = smooth*fftRes[i] + (1-smooth)*sum / (cnt * FFT_SIZE);
 	}
 }
 
@@ -223,7 +224,7 @@ void loopIter() {
 		soloVolume = curVolume;
 		size_t pos = musicPos;
 		SDL_UnlockAudio();
-		while (pos + FREQ*5/40 >= nextFFTPos) {
+		while (pos + FREQ*10/40 >= nextFFTPos) {
 			updateFFT(nextFFTPos);
 			nextFFTPos += FFT_UPDATE_INTERVAL;
 		}
@@ -299,6 +300,7 @@ void genMusic() {
 }
 
 int main(int argc, char* argv[]) {
+	bool resoChange = 0;
 	for(int i=1; i<argc; ++i) {
 		string s = argv[i];
 		if (s=="-c") {
@@ -309,6 +311,8 @@ int main(int argc, char* argv[]) {
 			gameMode = INSANE;
 		} else if (s=="-w") {
 			fullscreen = 0;
+		} else if (s=="-r") {
+			resoChange = true;
 		} else {
 			cout<<"Unknown argument "<<s<<'\n';
 		}
@@ -321,7 +325,21 @@ int main(int argc, char* argv[]) {
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_AUDIO);
 	SDL_ShowCursor(0);
 //	atexit(SDL_Quit);
-	screen = SDL_SetVideoMode(1600, 900, 0, SDL_OPENGL | SDL_RESIZABLE | fullscreen);
+	SDL_Rect** modes = SDL_ListModes(nullptr, SDL_OPENGL | SDL_FULLSCREEN);
+	int w=1600, h=900;
+	if (resoChange) {
+		w=800, h=600;
+		if (modes) {
+			for(int i=0; modes[i]; ++i) {
+				int ww = modes[i]->w, hh = modes[i]->h;
+				if (ww*hh > w*h) {
+					w = ww;
+					h = hh;
+				}
+			}
+		}
+	}
+	screen = SDL_SetVideoMode(w, h, 0, SDL_OPENGL | SDL_RESIZABLE | fullscreen);
 	assert(screen);
 //	genMusic();
 	SDL_OpenAudio(&spec, 0);
