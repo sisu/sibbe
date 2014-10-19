@@ -36,6 +36,7 @@ const double SHOW_BEFORE = 100.0;
 const double SHOW_AFTER = 5.0;
 const double HIT_RANGE = 0.3;
 const double BOW_POS = 3.0;
+const double STRING_LEN = 100;
 
 
 Renderer render;
@@ -151,7 +152,7 @@ struct String
 
 void String::init()
 {
-  stringModel = make_shared<Model>(makeCylinder(0.05, 100, 16));
+  stringModel = make_shared<Model>(makeCylinder(0.05, STRING_LEN, 16));
   vector<float> spiral;
   for(int i = 0; i < 16; ++i) {
     float base = i/4.f;
@@ -452,7 +453,7 @@ void drawFrame() {
 		RenderObject o(violinString.stringModel, violinString.program);
 //		obj.transform = translate(0,0,-5);
 		float pos = BOW_POS-1;
-		o.transform = view * translate(off) * translate(0,0,50+pos);
+		o.transform = view * translate(off) * translate(0,0,.5*STRING_LEN+pos);
 		if (idx == chosen) {
 			o.paramsv3["color"] = Vec3(1,1.0,0.2);
 		} else {
@@ -462,7 +463,7 @@ void drawFrame() {
 		RenderObject o2 = o;
 //		double yrot = off[0]<0 ? 0.1 : -0.1;
 		double yrot = -0.1*off[0];
-		o2.transform = view * translate(off) * translate(0,0,pos) * Rotate(yrot, 1) * Rotate(0.1, 0) * translate(0,0,-50);
+		o2.transform = view * translate(off) * translate(0,0,pos) * Rotate(yrot, 1) * Rotate(0.1, 0) * translate(0,0,-.5*STRING_LEN);
 		render.add(o2);
 	}
 	auto noteEnd = lower_bound(notes.begin(), notes.end(), totalTime + SHOW_BEFORE / NOTE_SPEED);
