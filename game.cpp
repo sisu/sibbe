@@ -435,7 +435,8 @@ void drawFrame() {
 	drawBg();
 
 	gl.enable(GL_DEPTH_TEST);
-	gl.disable(GL_BLEND);
+	gl.enable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	render.transform = perspectiveM(1.0, 4.0/3.0, 0.1, 1000);
 //	gl.disable(GL_CULL_FACE);
 //	Matrix4 view = Matrix4(translate(0,3,-20)) * Rotate(-M_PI*.125, 0);
@@ -500,7 +501,8 @@ void drawFrame() {
 	{
 		RenderObject o(violinModel, basicProgram);
 		o.transform = view * translate(0,-5,2);
-		o.paramsv3["color"] = Vec3(0.2, 0.2, 0.2);
+		float c = 0.15;
+		o.paramsv3["color"] = Vec3(c,c,c);
 		render.add(o);
 	}
 	render.flush();
