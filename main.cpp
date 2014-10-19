@@ -22,6 +22,7 @@ extern GameMode gameMode;
 extern HighScore highScore;
 extern long score;
 extern bool showScoreGet;
+extern bool slowMusic;
 
 extern float fftRes[];
 
@@ -37,8 +38,14 @@ const int FREQ = 44100;
 const int SAMPLES = 512;
 
 vector<short> startMusic;
-vector<short> bgMusic;
-vector<short> solo;
+vector<short> bgMusic[2];
+vector<short> solo[2];
+vector<short>& getBG() {
+	return bgMusic[slowMusic];
+}
+vector<short>& getSolo() {
+	return solo[slowMusic];
+}
 size_t musicPos;
 
 
@@ -82,10 +89,10 @@ void updateFFT(size_t mpos) {
 	static float rcos[FFT_SIZE];
 	static float rsin[FFT_SIZE];
 	int i = 0;
-	for(; i<FFT_SIZE && mpos + i < bgMusic.size(); ++i) {
+	for(; i<FFT_SIZE && mpos + i < getBG().size(); ++i) {
 		float s = 0;
-		if (mpos + i < bgMusic.size()) s += bgMusic[mpos + i];
-		if (mpos + i < solo.size()) s += soloVolume * solo[mpos + i];
+		if (mpos + i < getBG().size()) s += getBG()[mpos + i];
+		if (mpos + i < getSolo().size()) s += soloVolume * getSolo()[mpos + i];
 		samples[i] = s;
 	}
 	for(;i < FFT_SIZE; ++i)
@@ -139,14 +146,15 @@ void handleKey(SDLKey k) {
 	if (menuState == START) {
 		if (k==SDLK_RETURN) menuState = MENU;
 	} else if (menuState == MENU) {
-		if(k==SDLK_n){					
+		if(k==SDLK_n){
 			changeState(GAME);
-		}
-		if(k==SDLK_h){
+		} else if(k==SDLK_h){
 			menuState = HIGHSCORE;
-		}
-		if(k==SDLK_q)
+		} else if(k==SDLK_q) {
 			end = 1;
+		} else if (k==SDLK_s) {
+			slowMusic = !slowMusic;
+		}
 	} else if (menuState == GAME) {
 		int note = getNoteKey(k);
 		if (note>=0) keyDown(note);
@@ -198,7 +206,7 @@ void loopIter() {
 	if (menuState == START) {
 		drawImageFrame(startTex);
 	} else if (menuState == MENU) {
-		drawImageFrame(menuTex);
+		drawMenuFrame(menuTex);
 	} else if (menuState == GAME) {
 		double time = SDL_GetTicks()/1000.;
 		updateGameState(time - prevTime);
@@ -220,7 +228,7 @@ void loopIter() {
 			nextFFTPos += FFT_UPDATE_INTERVAL;
 		}
 	}
-	if (menuState == GAME && musicPos > bgMusic.size() + 2*FREQ) {
+	if (menuState == GAME && musicPos > getBG().size() + 2*FREQ) {
 		changeState(ENDING);
 	}
 
@@ -252,11 +260,11 @@ void callback(void* udata, Uint8* s, int len)
 	Sint16* stream = (Sint16*)s;
 
 	if (menuState==GAME) {
-		for(int i=0; i<len && musicPos+i<bgMusic.size(); ++i) {
-			stream[i] = bgMusic[musicPos + i];
+		for(int i=0; i<len && musicPos+i<getBG().size(); ++i) {
+			stream[i] = getBG()[musicPos + i];
 		}
-		for(int i=0; i<len && musicPos+i<solo.size(); ++i) {
-			stream[i] += soloVolume * solo[musicPos + i];
+		for(int i=0; i<len && musicPos+i<getSolo().size(); ++i) {
+			stream[i] += soloVolume * getSolo()[musicPos + i];
 		}
 	} else if (menuState == START || menuState == MENU) {
 		for(int i=0; i<len && musicPos+i<startMusic.size(); ++i) {
@@ -306,8 +314,10 @@ int main(int argc, char* argv[]) {
 		}
 	}
 	startMusic=WavReader::readUncompressedWavFile("sound/alku.wav");
-	bgMusic = WavReader::readUncompressedWavFile("sound/tausta.wav");
-	solo = WavReader::readUncompressedWavFile("sound/soolo.wav");
+	bgMusic[0] = WavReader::readUncompressedWavFile("sound/tausta.wav");
+	solo[0] = WavReader::readUncompressedWavFile("sound/soolo.wav");
+	bgMusic[1] = WavReader::readUncompressedWavFile("sound/tausta_hidas.wav");
+	solo[1] = WavReader::readUncompressedWavFile("sound/soolo_hidas.wav");
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_AUDIO);
 	SDL_ShowCursor(0);
 //	atexit(SDL_Quit);

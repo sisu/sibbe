@@ -15,6 +15,7 @@ void drawFrame();
 void drawEnding(const string& name);
 void drawHighScore();
 
+void drawMenuFrame(GLuint tex);
 void drawImageFrame(GLuint tex);
 
 static const int FFT_BUCKETS = 1000;

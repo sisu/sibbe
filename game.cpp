@@ -24,7 +24,8 @@ double destVolume = 1.0;
 GameMode gameMode = HARD;
 HighScore highScore;
 long long score = 0;
-bool showScoreGet = 0;
+bool showScoreGet = false;
+bool slowMusic = false;
 
 float fftRes[FFT_BUCKETS];
 
@@ -229,8 +230,9 @@ void newGame() {
 	ifstream in("score/sisu.txt");
 	double time;
 	int note;
+	double speedChange = slowMusic ? 4.8 : 2.4;
 	while(in>>time>>note) {
-		notes.emplace_back(2.4 * time, note);
+		notes.emplace_back(speedChange * time, note);
 	}
 	scoreShow.clear();
 	score = 0;
@@ -541,6 +543,12 @@ void drawImageFrame(GLuint tex) {
 	o.uniform1i["texture"] = 0;
 	render.add(o);
 	render.flush();
+}
+
+void drawMenuFrame(GLuint tex) {
+	drawImageFrame(tex);
+	string str = string("Game [S]peed: ") + (slowMusic ? "slow" : "fast");
+	drawText(str.c_str(), 0.04, -.95, .1, false);
 }
 
 void drawEnding(const string& name) {
