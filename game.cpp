@@ -35,6 +35,7 @@ const double NOTE_SPEED = 25.0;
 const double SHOW_BEFORE = 100.0;
 const double SHOW_AFTER = 5.0;
 const double HIT_RANGE = 0.3;
+const double BOW_POS = 3.0;
 
 
 Renderer render;
@@ -254,9 +255,10 @@ void createParticles(Vec3 col)
 {
 	const int n = 50;
 	int string = getChosenString();
-	Vec3 offset[] = {{-1.5,1.f,0}, {-0.5,1.0f,0}, {0.5,1.0f,0}, {1.5,1.f,0}};
+	Vec3 offset[] = {{-1.5,0.f,0}, {-0.5,0.0f,0}, {0.5,0.0f,0}, {1.5,0.f,0}};
 
 	Vec3 basePos = offset[string];
+	basePos[2] += BOW_POS;
 	for(int i = 0; i < n; ++i) {
 		float angle = 2*M_PI*i/n;
 		float vel = 5.f/particleTime * rand() / RAND_MAX;
@@ -400,13 +402,13 @@ void drawBg() {
 	CHECK_GL();
 }
 
-void drawParticles()
+void drawParticles(Matrix4 view)
 {
 	gl.disable(GL_DEPTH_TEST);
 	gl.enable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
-	Matrix4 view = Matrix4(scale(1,1,-1)) * Matrix4(translate(0,-3,5));
+//	Matrix4 view = Matrix4(scale(1,1,-1)) * Matrix4(translate(0,-3,5));
 	for(size_t i = 0; i < particles.size(); ++i) {
 		RenderObject o(quadModel, particleProgram);
 
@@ -454,7 +456,6 @@ void drawFrame() {
 		}
 		render.add(o);
 	}
-	const double BOW_POS = 3.0;
 	auto noteEnd = lower_bound(notes.begin(), notes.end(), totalTime + SHOW_BEFORE / NOTE_SPEED);
 	for(auto iter = lower_bound(notes.begin(), notes.end(), totalTime - SHOW_AFTER / NOTE_SPEED);
 			iter != noteEnd; ++iter) {
@@ -496,7 +497,7 @@ void drawFrame() {
 	}
 	render.flush();
 
-	drawParticles();
+	drawParticles(view);
 
 
 	drawScore();
