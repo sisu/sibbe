@@ -330,11 +330,20 @@ void drawBg() {
 
 	bg.fftdata.setData(fftRes, FFT_BUCKETS, 1);
 
+	float sum = 0;
+	for(int i = 0.2f*FFT_BUCKETS; i < 0.6f*FFT_BUCKETS; ++i)
+	  sum += fftRes[i];
+	sum /= (0.4f*FFT_BUCKETS);
+
 	auto idx = glGetUniformLocation(bg.program->id, "fft");
 	if(idx >= 0)
 	  glUniform1i(idx, 0);
 	else
 	  cout << "Failed to bind tex" << endl;
+
+	idx = glGetUniformLocation(bg.program->id, "avg");
+	if(idx >= 0)
+	  glUniform1f(idx, sum);
 
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
