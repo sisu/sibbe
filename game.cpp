@@ -50,6 +50,7 @@ ProgramPtr basicProgram;
 ProgramPtr markerProgram;
 ProgramPtr textProgram;
 GLuint scoreTexture;
+Vec3 lightCol;
 
 ProgramPtr bgProgram;
 ProgramPtr particleProgram;
@@ -389,6 +390,8 @@ void drawBg() {
 	  sum += fftRes[i];
 	sum /= (0.4f*FFT_BUCKETS);
 
+  lightCol = Vec3( sum, 4.0*sum*(1.0-sum), 1.0-sum ) * sum;
+
 	auto idx = glGetUniformLocation(bg.program->id, "fft");
 	if(idx >= 0)
 	  glUniform1i(idx, 0);
@@ -459,12 +462,14 @@ void drawFrame() {
 		} else {
 			o.paramsv3["color"] = Vec3(0.8,0.8,0.8);
 		}
+    o.uniformv3["lColor"] = o.paramsv3["color"];
 		render.add(o);
 		RenderObject o2 = o;
 //		double yrot = off[0]<0 ? 0.1 : -0.1;
 		double yrot = -0.1*off[0];
 		o2.transform = view * translate(off) * translate(0,0,pos) * Rotate(yrot, 1) * Rotate(0.1, 0) * translate(0,0,-.5*STRING_LEN);
 		render.add(o2);
+    o2.uniformv3["lColor"] = o2.paramsv3["color"];
 	}
 	auto noteEnd = lower_bound(notes.begin(), notes.end(), totalTime + SHOW_BEFORE / NOTE_SPEED);
 	for(auto iter = lower_bound(notes.begin(), notes.end(), totalTime - SHOW_AFTER / NOTE_SPEED);
@@ -482,6 +487,7 @@ void drawFrame() {
 //		o.paramsv3["color"] = interpolate(n.key()/9.0, {{.5,.5,1}, {1,0,1}, {.5,0,0}});
 		o.paramsv3["color"] = interpolate(n.key()/9.0,
 				{{0,0,1}, {0,1,1}, {0,1,0}, {1,1,0}, {1,0,0}});
+    //o.uniformv3["lColor"] = lightCol; marker
 		if (n.done) o.paramsv3["color"] = Vec3(0.3,0,0);
 		render.add(o);
 	}
@@ -498,11 +504,13 @@ void drawFrame() {
 		Matrix4 moveZ = translate(0,0,BOW_POS);
 		o.transform = view * moveZ * moveToMid * rotateZ * rotateY;
 		o.paramsv3["color"] = Vec3(0.6,0.2,0);
+    o.uniformv3["lColor"] = Vec3(0.6,0.2,0);
 		render.add(o);
 
 		RenderObject o2(bowHairModel, basicProgram);
 		o2.transform = o.transform * Rotate(0.5*M_PI, 0) * translate(0,0,-.5);
 		o2.paramsv3["color"] = Vec3(0.8,0.8,0.8);
+    o2.uniformv3["lColor"] = Vec3(0.8,0.8,0.8);
 		render.add(o2);
 	}
 	{
@@ -510,6 +518,7 @@ void drawFrame() {
 		o.transform = view * translate(0,-5,4);
 		float c = 0.15;
 		o.paramsv3["color"] = Vec3(c,c,c);
+    o.uniformv3["lColor"] = lightCol;
 		render.add(o);
 	}
 	render.flush();
