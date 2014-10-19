@@ -451,13 +451,19 @@ void drawFrame() {
 		++idx;
 		RenderObject o(violinString.stringModel, violinString.program);
 //		obj.transform = translate(0,0,-5);
-		o.transform = view * translate(off) * translate(0,0,50);
+		float pos = BOW_POS-1;
+		o.transform = view * translate(off) * translate(0,0,50+pos);
 		if (idx == chosen) {
 			o.paramsv3["color"] = Vec3(1,1.0,0.2);
 		} else {
 			o.paramsv3["color"] = Vec3(0.8,0.8,0.8);
 		}
 		render.add(o);
+		RenderObject o2 = o;
+//		double yrot = off[0]<0 ? 0.1 : -0.1;
+		double yrot = -0.1*off[0];
+		o2.transform = view * translate(off) * translate(0,0,pos) * Rotate(yrot, 1) * Rotate(0.1, 0) * translate(0,0,-50);
+		render.add(o2);
 	}
 	auto noteEnd = lower_bound(notes.begin(), notes.end(), totalTime + SHOW_BEFORE / NOTE_SPEED);
 	for(auto iter = lower_bound(notes.begin(), notes.end(), totalTime - SHOW_AFTER / NOTE_SPEED);
