@@ -95,6 +95,16 @@ vector<ScoreShow> scoreShow;
 
 int lastKeyPressed = 0;
 
+const float particleTime = 0.5f;
+
+struct Particle
+{
+  Vec3 pos;
+  Vec3 vel;
+  float age;
+};
+
+vector<Particle> particles;
 
 struct BG
 {
@@ -165,6 +175,24 @@ int getChosenString() {
 
 }
 
+void updateParticles(double dt)
+{
+  for(size_t i = 0; i < particles.size();) {
+    Particle& p = particles[i];
+    p.age += dt;
+    if(p.age > particleTime) {
+      particles[i] = particles.back();
+      particles.pop_back();
+      continue;
+    }
+
+    Vec3 movement = exp((float)dt)*p.vel;
+    p.pos = p.pos + movement;
+    p.vel = powf(dt, 0.5f)*p.vel;
+    ++i;
+  }
+}
+
 void initGame() {
 	markerModel = make_shared<Model>(makeCylinder(0.2, 0.2, 16));
 	bowModel = make_shared<Model>(makeCylinder(0.15, BOW_LEN, 16));
@@ -207,7 +235,23 @@ void updateGameState(double dt) {
 			++i;
 		}
 	}
+	updateParticles(dt);
 }
+
+void createParticles()
+{
+  const int n = 100;
+  int string = getChosenString();
+  Vec3 offset[] = {{-1.5,0,0}, {-0.5,0.0,0}, {0.5,0.0,0}, {1.5,0,0}};
+
+  Vec3 basePos = offset[string];
+  for(int i = 0; i < n; ++i) {
+    float angle = 2*M_PI/i;
+    Vec3 pos(cos(angle), sin(angle), 0);
+    particles.push_back({basePos+pos, pos, 0});
+  }
+}
+
 
 void moveBow(double dx, double dy) {
 	(void)dy;
@@ -245,6 +289,7 @@ void keyDown(int key) {
 		n.done = true;
 		n.score = true;
 		score += 100;
+		createParticles();
 		if (showScoreGet) scoreShow.emplace_back();
 		lastOkRealKey = n.key();
 
