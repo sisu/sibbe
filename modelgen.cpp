@@ -87,3 +87,35 @@ Model makeCylinder(float rad, float height, int parts) {
 	m.load();
 	return m;
 }
+
+Model makeViolin() {
+	const int n = 12;
+	const double L = 100;
+	const double r0 = 5.0;
+	const double r1 = r0;
+	vector<Vec3> vts;
+	vector<Vec3> normals;
+	Model m;
+	for(int i=0; i<=n; ++i) {
+		double t = 1.0*i/n - .5;
+		double ang = 0.8*t;
+
+		double x = sin(ang);
+		double y = cos(ang);
+		vts.emplace_back(r0*x,r0*y,0);
+		normals.emplace_back(x,y,0);
+		vts.emplace_back(r1*x,r1*y,L);
+		normals.emplace_back(x,y,0);
+
+		if (i<n) {
+			int low=2*i, low2=2*(i+1);
+			int hi=low+1, hi2=low2+1;
+			m.addTriangle(low, hi, low2);
+			m.addTriangle(low2, hi, hi2);
+		}
+	}
+	m.setAttr("pos", vts);
+	m.setAttr("normal", normals);
+	m.load();
+	return m;
+}

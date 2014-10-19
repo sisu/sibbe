@@ -44,6 +44,7 @@ ModelPtr markerModel;
 ModelPtr bowModel;
 ModelPtr bowHairModel;
 ModelPtr quadModel;
+ModelPtr violinModel;
 ProgramPtr basicProgram;
 ProgramPtr markerProgram;
 ProgramPtr textProgram;
@@ -209,6 +210,7 @@ void initGame() {
 	bowModel = make_shared<Model>(makeCylinder(0.15, BOW_LEN, 16));
 	bowHairModel = make_shared<Model>(makeQuad(0.15, .5*BOW_LEN));
 	quadModel = make_shared<Model>(makeQuad(1.0, 1.0));
+	violinModel = make_shared<Model>(makeViolin());
 	basicProgram = make_shared<Program>(Program::fromFiles("shaders/t.vert", "shaders/t.frag"));
 	particleProgram = make_shared<Program>(Program::fromFiles("shaders/particle.vert", "shaders/particle.frag"));
 	markerProgram = make_shared<Program>(Program::fromFiles("shaders/t.vert", "shaders/marker.frag"));
@@ -494,6 +496,12 @@ void drawFrame() {
 		o2.transform = o.transform * Rotate(0.5*M_PI, 0) * translate(0,0,-.5);
 		o2.paramsv3["color"] = Vec3(0.8,0.8,0.8);
 		render.add(o2);
+	}
+	{
+		RenderObject o(violinModel, basicProgram);
+		o.transform = view * translate(0,-5,2);
+		o.paramsv3["color"] = Vec3(0.2, 0.2, 0.2);
+		render.add(o);
 	}
 	render.flush();
 
