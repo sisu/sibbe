@@ -151,7 +151,7 @@ struct String
 
 void String::init()
 {
-  stringModel = make_shared<Model>(makeCylinder(0.05, 200, 16));
+  stringModel = make_shared<Model>(makeCylinder(0.05, 100, 16));
   vector<float> spiral;
   for(int i = 0; i < 16; ++i) {
     float base = i/4.f;
@@ -451,7 +451,7 @@ void drawFrame() {
 		++idx;
 		RenderObject o(violinString.stringModel, violinString.program);
 //		obj.transform = translate(0,0,-5);
-		o.transform = view * translate(off);
+		o.transform = view * translate(off) * translate(0,0,50);
 		if (idx == chosen) {
 			o.paramsv3["color"] = Vec3(1,1.0,0.2);
 		} else {
@@ -500,7 +500,7 @@ void drawFrame() {
 	}
 	{
 		RenderObject o(violinModel, basicProgram);
-		o.transform = view * translate(0,-5,2);
+		o.transform = view * translate(0,-5,4);
 		float c = 0.15;
 		o.paramsv3["color"] = Vec3(c,c,c);
 		render.add(o);
