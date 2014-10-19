@@ -23,7 +23,7 @@ void main() {
 
   vec3 col = vec3( val, 4.0*val*(1.0-val), 1.0-val ) * val;
 
-  float w2 = 0.35*smoothstep(0.0, 1.0, 1 - abs(val - uv.y));
+  float w2 = 0.35*smoothstep(0.0, 1.0, 1.0 - abs(val - uv.y));
   vec3 acol = vec3( avg, 4.0*avg*(1.0-avg), 1.0-avg ) * avg;
 
   gl_FragColor = w*vec4(col,1.0) + clamp(w2-w+0.1, 0.0, 1.0)*vec4(acol, 1.0);

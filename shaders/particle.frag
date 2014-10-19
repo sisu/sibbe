@@ -3,10 +3,11 @@ precision highp float;
 #endif
 
 uniform vec3 color;
+uniform float age;
 
 varying vec2 uv;
 
 void main() {
-     vec2 t = sqrt(2)/2 - length(vec2(0.5,0.5) - uv);
-	gl_FragColor = vec4(color,t);
+	float t = max(0.0, .5 - length(vec2(0.5,0.5) - uv));
+	gl_FragColor = vec4(color,t*age);
 }

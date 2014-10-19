@@ -95,7 +95,7 @@ vector<ScoreShow> scoreShow;
 
 int lastKeyPressed = 0;
 
-const float particleTime = 0.5f;
+const float particleTime = 0.2f;
 
 struct Particle
 {
@@ -189,19 +189,18 @@ int getChosenString() {
 
 void updateParticles(double dt)
 {
-  for(size_t i = 0; i < particles.size();) {
-    Particle& p = particles[i];
-    p.age += dt;
-    if(p.age > particleTime) {
-      particles[i] = particles.back();
-      particles.pop_back();
-      continue;
-    }
-    Vec3 movement = (0.1f*exp((float)dt))*p.vel;
-    p.pos = p.pos + movement;
-
-    ++i;
-  }
+	for(size_t i = 0; i < particles.size();) {
+		Particle& p = particles[i];
+		p.age += dt;
+		if(p.age > particleTime) {
+			particles[i] = particles.back();
+			particles.pop_back();
+			continue;
+		}
+		float left = particleTime - p.age;
+		p.pos += float(dt) * left * p.vel;
+		++i;
+	}
 }
 
 void initGame() {
@@ -253,16 +252,17 @@ void updateGameState(double dt) {
 
 void createParticles(Vec3 col)
 {
-  const int n = 100;
-  int string = getChosenString();
-  Vec3 offset[] = {{-1.5,1.f,0}, {-0.5,1.0f,0}, {0.5,1.0f,0}, {1.5,1.f,0}};
+	const int n = 50;
+	int string = getChosenString();
+	Vec3 offset[] = {{-1.5,1.f,0}, {-0.5,1.0f,0}, {0.5,1.0f,0}, {1.5,1.f,0}};
 
-  Vec3 basePos = offset[string];
-  for(int i = 0; i < n; ++i) {
-    float angle = 2*M_PI/i;
-    Vec3 dir(cos(angle), sin(angle), 0);
-    particles.push_back({basePos, dir, col, 0});
-  }
+	Vec3 basePos = offset[string];
+	for(int i = 0; i < n; ++i) {
+		float angle = 2*M_PI*i/n;
+		float vel = 5.f/particleTime * rand() / RAND_MAX;
+		Vec3 dir(cos(angle), sin(angle), 0);
+		particles.push_back({basePos, vel*dir, col, 0});
+	}
 }
 
 
@@ -402,23 +402,26 @@ void drawBg() {
 
 void drawParticles()
 {
-  gl.disable(GL_DEPTH_TEST);
+	gl.disable(GL_DEPTH_TEST);
 	gl.enable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
+	Matrix4 view = Matrix4(scale(1,1,-1)) * Matrix4(translate(0,-3,5));
+	for(size_t i = 0; i < particles.size(); ++i) {
+		RenderObject o(quadModel, particleProgram);
+
+		Particle& p = particles[i];
+
+		Matrix4 move = translate(p.pos);
+		o.transform = view*move*scale(0.1666f, 0.2f);
+//		o.transform = view*move*scale(0.1, 0.1);
+		o.uniform1f["age"] = (particleTime - p.age) / particleTime;
+		o.uniformv3["color"] = p.col;
+		render.add(o);
+	}
+	render.flush();
+	gl.enable(GL_DEPTH_TEST);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-  Matrix4 view = Matrix4(scale(1,1,-1)) * Matrix4(translate(0,-3,5));
-  for(size_t i = 0; i < particles.size(); ++i) {
-    RenderObject o(quadModel, particleProgram);
-
-    Particle& p = particles[i];
-
-    Matrix4 move = translate(p.pos);
-    o.transform = view*move*scale(0.1666f, 0.2f);
-    o.uniform1f["age"] = p.age;
-    o.uniformv3["color"] = p.col;
-    render.add(o);
-  }
-  gl.enable(GL_DEPTH_TEST);
 }
 
 
@@ -491,10 +494,10 @@ void drawFrame() {
 		o2.paramsv3["color"] = Vec3(0.8,0.8,0.8);
 		render.add(o2);
 	}
+	render.flush();
 
 	drawParticles();
 
-	render.flush();
 
 	drawScore();
 	drawScoreShow();
