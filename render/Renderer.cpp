@@ -42,10 +42,20 @@ void Renderer::draw(const RenderObject& o) {
 		if (id>=0) glVertexAttrib3fv(id, &i.second[0]);
 		CHECK_GL();
 	}
+	for(const auto& i: o.uniformv3) {
+		GLint id = glGetUniformLocation(o.program->id, i.first.c_str());
+		if (id>=0) glUniform3fv(id, 1, &i.second[0]);
+		CHECK_GL();
+	}
 #if 1
 	for(const auto& i: o.uniform1i) {
 		GLint id = glGetUniformLocation(o.program->id, i.first.c_str());
 		if (id>=0) glUniform1i(id, i.second);
+		CHECK_GL();
+	}
+	for(const auto& i: o.uniform1f) {
+		GLint id = glGetUniformLocation(o.program->id, i.first.c_str());
+		if (id>=0) glUniform1f(id, i.second);
 		CHECK_GL();
 	}
 #endif
