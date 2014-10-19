@@ -209,6 +209,7 @@ void initGame() {
 
 void newGame() {
 	notes.clear();
+	particles.clear();
 	ifstream in("score/sisu.txt");
 	double time;
 	int note;
