@@ -82,6 +82,7 @@ vector<Note> notes;
 double bowX=0;
 
 double totalTime;
+float performance = 1.f; /// 1 if perfect, zero if crappy
 
 double randf() {
 	return (double)rand() / RAND_MAX;
@@ -240,6 +241,23 @@ void newGame() {
 	bowX = 0;
 }
 
+void updateMissedNotes() {
+	auto noteStart = lower_bound(notes.begin(), notes.end(), totalTime - HIT_RANGE);
+
+  auto it = noteStart;
+  while(it != notes.begin()) {
+    --it;
+		Note& n = *it;
+    if(n.done)
+      continue;
+    else {
+      n.done = true;
+      /// @todo value of performance should be 'continuous', change most at 1/2000 per frame
+      performance = max(performance - 1.f/20.f, 0.f);
+    }
+  }
+}
+
 void updateGameState(double dt) {
 	totalTime += dt;
 	updateVolume(dt);
@@ -254,6 +272,10 @@ void updateGameState(double dt) {
 			++i;
 		}
 	}
+
+  updateMissedNotes();
+
+
 	updateParticles(dt);
 }
 
@@ -288,6 +310,7 @@ void keyDown(int key) {
 	auto noteStart = lower_bound(notes.begin(), notes.end(), totalTime - HIT_RANGE);
 	auto noteEnd = lower_bound(notes.begin(), notes.end(), totalTime + HIT_RANGE);
 	int chosen = getChosenString();
+
 	for(auto iter = noteStart; iter != noteEnd; ++iter) {
 		Note& n = *iter;
 		if (n.done) continue;
@@ -309,13 +332,17 @@ void keyDown(int key) {
 		}
 		n.done = true;
 		n.score = true;
+    performance = min(performance + 1.f/100.f, 1.f);
+
 		score += 100;
 		createParticles(interpolate(n.key()/9.0,
 				{{0,0,1}, {0,1,1}, {0,1,0}, {1,1,0}, {1,0,0}} ));
 		if (showScoreGet) scoreShow.emplace_back();
 		lastOkRealKey = n.key();
 
-		for(auto i=noteStart; i!=iter; ++i) i->done = true;
+		for(auto i=noteStart; i!=iter; ++i) {
+      i->done = true;
+    }
 		break;
 	}
 }
@@ -403,6 +430,10 @@ void drawBg() {
 	idx = glGetUniformLocation(bg.program->id, "avg");
 	if(idx >= 0)
 	  glUniform1f(idx, sum);
+
+	idx = glGetUniformLocation(bg.program->id, "precision");
+	if(idx >= 0)
+	  glUniform1f(idx, performance);
 
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 

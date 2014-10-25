@@ -4,20 +4,32 @@ precision highp float;
 
 uniform sampler2D fft;
 uniform float avg;
+uniform float precision;
 
 varying vec2 uv;
 
-void main() {
-  float samplePoint = uv.x*0.4 + 0.2;
- 
+const float baseSamples = 2000.0;
 
-  float val = texture2D(fft, vec2(samplePoint, 0.25)).r;
+void main() {
+  float bins = (baseSamples - 10.0)*precision + 10.0;
+
+  float binSize = 1.0/bins;
+
+  float start = floor(uv.x/binSize);
+
+  float val = 0.0;
+  for(int i = 0; i < 10; ++i) {
+    float x = (start + float(i)*binSize/10.0)/bins;
+    float samplePoint = x*0.4 + 0.2;
+    val += texture2D(fft, vec2(samplePoint, 0.25)).r;
+  }
+  val /= 10.0;
 
   float diff = val/1.1 - uv.y;
   if(diff > 0.0)
-    diff = diff/ ( 0.2025 + (1.0 - smoothstep(0.1, 0.6, val))*0.5);
+    diff = (precision*diff)/ ( 0.2025 + (1.0 - smoothstep(0.1, 0.6, val))*0.5);
   else
-    diff = abs(diff)/0.05;
+    diff = abs(diff)/(0.05*precision + 0.00001);
 
   float w = 1.0 - clamp(diff, 0.0, 1.0);
 
