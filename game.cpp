@@ -578,8 +578,8 @@ void drawImageFrame(GLuint tex) {
 
 void drawMenuFrame(GLuint tex) {
 	drawImageFrame(tex);
-	string str = string("Game [S]peed: ") + (slowMusic ? "slow" : "fast");
-	drawText(str.c_str(), 0.04, -.95, .1, false);
+//	string str = string("Game [S]peed: ") + (slowMusic ? "slow" : "fast");
+//	drawText(str.c_str(), 0.04, -.95, .1, false);
 }
 
 void drawEnding(const string& name) {
