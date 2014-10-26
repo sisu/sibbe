@@ -11,7 +11,8 @@ varying vec2 uv;
 const float baseSamples = 2000.0;
 
 void main() {
-  float bins = (baseSamples - 10.0)*precision + 10.0;
+  float p2 = precision * precision;
+  float bins = (baseSamples - 10.0)*p2 + 10.0;
 
   float binSize = 1.0/bins;
 
@@ -27,9 +28,9 @@ void main() {
 
   float diff = val/1.1 - uv.y;
   if(diff > 0.0)
-    diff = (precision*diff)/ ( 0.2025 + (1.0 - smoothstep(0.1, 0.6, val))*0.5);
+    diff = (p2*diff)/ ( 0.2025 + (1.0 - smoothstep(0.1, 0.6, val))*0.5);
   else
-    diff = abs(diff)/(0.05*precision + 0.00001);
+    diff = abs(diff)/(0.05*p2 + 0.00001);
 
   float w = 1.0 - clamp(diff, 0.0, 1.0);
 
