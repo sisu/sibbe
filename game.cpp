@@ -226,6 +226,7 @@ void initGame() {
 }
 
 void newGame() {
+  performance = 1.f;
 	notes.clear();
 	particles.clear();
 	ifstream in("score/sisu.txt");
