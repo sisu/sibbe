@@ -24,7 +24,7 @@ double destVolume = 1.0;
 GameMode gameMode = HARD;
 HighScore highScore;
 long long score = 0;
-bool showScoreGet = false;
+bool showScoreGet = true;
 bool slowMusic = false;
 
 float fftRes[FFT_BUCKETS];
@@ -399,7 +399,7 @@ void drawScoreShow() {
 	for(ScoreShow ss: scoreShow) {
 		RenderObject o(quadModel, textProgram);
 		Matrix4 move = translate(ss.pos);
-		o.transform = move * scale(0.1, 0.05);
+		o.transform = move * scale(0.1, 0.07);
 		o.uniform1i["texture"] = 0;
 		render.add(o);
 	}
