@@ -110,7 +110,7 @@ vector<short> readUncompressedWavFile(string file_name){
     assert(sample_size_in_bytes == 2);
     assert(numberOfChannels == 2);
     vector<short> buf(data_array_size*numberOfChannels);
-    fin.read((char*)&buf[0], buf.size());
+    fin.read((char*)&buf[0], buf.size()*sample_size_in_bytes);
     for(int i=0; i<data_array_size; i++){
         ret[i] = ((int)buf[2*i]+buf[2*i+1])/2;
     }
