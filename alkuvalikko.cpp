@@ -50,7 +50,7 @@ Alkuvalikko::Alkuvalikko(){}
 void Alkuvalikko::run(){
 	SDL_Surface* screen = SDL_SetVideoMode(764, 571, 0, SDL_RESIZABLE);
 	SDL_Surface* kuva=IMG_Load("alku.jpg");
-	musa=WavReader::readUncompressedWavFile("sound/alku.wav");
+	musa=readUncompressedWavFile("sound/alku.wav");
 	SDL_OpenAudio(&spec, 0);
 	SDL_PauseAudio(0);
 

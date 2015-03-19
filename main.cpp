@@ -317,11 +317,11 @@ int main(int argc, char* argv[]) {
 			cout<<"Unknown argument "<<s<<'\n';
 		}
 	}
-	startMusic=WavReader::readUncompressedWavFile("sound/alku.wav");
-	bgMusic[0] = WavReader::readUncompressedWavFile("sound/tausta.wav");
-	solo[0] = WavReader::readUncompressedWavFile("sound/soolo.wav");
-	bgMusic[1] = WavReader::readUncompressedWavFile("sound/tausta_hidas.wav");
-	solo[1] = WavReader::readUncompressedWavFile("sound/soolo_hidas.wav");
+	startMusic=readUncompressedWavFile("sound/alku.wav");
+	bgMusic[0] = readUncompressedWavFile("sound/tausta.wav");
+	solo[0] = readUncompressedWavFile("sound/soolo.wav");
+	bgMusic[1] = readUncompressedWavFile("sound/tausta_hidas.wav");
+	solo[1] = readUncompressedWavFile("sound/soolo_hidas.wav");
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_AUDIO);
 	SDL_ShowCursor(0);
 //	atexit(SDL_Quit);

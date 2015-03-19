@@ -1,15 +1,5 @@
-#ifndef WAV_READER_HPP
-#define WAV_READER_HPP
+#pragma once
 #include <vector>
-#include <iostream>
-#include <fstream>
+#include <string>
 
-class WavReader{
-public:
-    static std::vector<short> readUncompressedWavFile(std::string file_name);
-private:
-    static int nextWavSample(std::ifstream& in, int size);
-    static int to_int(char* data, int data_size);
-};
-
-#endif
+std::vector<short> readUncompressedWavFile(std::string file_name);

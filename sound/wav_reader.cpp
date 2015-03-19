@@ -3,16 +3,21 @@
 #include <fstream>
 #include <iostream>
 #include <cstdlib>
+#include <iostream>
+#include <fstream>
+#include <cassert>
 
 using namespace std;
-int WavReader::to_int(char* data, int data_size){
+namespace {
+int to_int(char* data, int data_size){
     int ret=0;
     for(int i=0; i<data_size; i++)
         ret+=(int((unsigned char)data[i]))*(1<<(8*i));
     return ret;
 }
 
-int WavReader::nextWavSample(ifstream& in, int size){
+#if 0
+int nextWavSample(ifstream& in, int size){
     char* sample = new char[size];
     in.read(sample, size);
 
@@ -30,15 +35,17 @@ int WavReader::nextWavSample(ifstream& in, int size){
     long long ret=to_int(sample,size);
     return ret;
 }
+#endif
 
 static vector<short> invalidFileFormatErrorMSG(string msg){
     cerr<<"Problem with file format, please make sure that the file is a correct and uncompressed .wav file!"<<" ; "<<msg<<endl;
-	abort();
+    abort();
     return vector<short>();
+}
 }
 
 
-vector<short> WavReader::readUncompressedWavFile(string file_name){
+vector<short> readUncompressedWavFile(string file_name){
     ifstream fin(file_name);
 
 
@@ -72,6 +79,7 @@ vector<short> WavReader::readUncompressedWavFile(string file_name){
     char sampleRate[5] = {};
     fin.read(sampleRate,4);
     int sample_rate=to_int(sampleRate,4);
+    assert(sample_rate==44100);
 
     char byteRate[5] = {};
     fin.read(byteRate,4);
@@ -82,6 +90,7 @@ vector<short> WavReader::readUncompressedWavFile(string file_name){
     char bitsPerSample[3] = {};
     fin.read(bitsPerSample,2);
     int bits_per_sample=to_int(bitsPerSample,2);
+    assert(bits_per_sample==16);
 
     if(to_int(byteRate,4)!=to_int(sampleRate,4)*numberOfChannels*to_int(bitsPerSample,2)/8)
         return invalidFileFormatErrorMSG("byterate");
@@ -98,6 +107,14 @@ vector<short> WavReader::readUncompressedWavFile(string file_name){
 
     vector<short> ret;
     ret.resize(data_array_size);
+    assert(sample_size_in_bytes == 2);
+    assert(numberOfChannels == 2);
+    vector<short> buf(data_array_size*numberOfChannels);
+    fin.read((char*)&buf[0], buf.size());
+    for(int i=0; i<data_array_size; i++){
+        ret[i] = ((int)buf[2*i]+buf[2*i+1])/2;
+    }
+#if 0
 
     for(int i=0; i<data_array_size; i++){
         int temp=0;
@@ -106,7 +123,6 @@ vector<short> WavReader::readUncompressedWavFile(string file_name){
         temp/=numberOfChannels;
         ret[i]=temp;
     }
-
-    fin.close();
+#endif
     return ret;
 }
