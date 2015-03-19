@@ -10,6 +10,7 @@
 #include <cstring>
 #include <vector>
 #include <cmath>
+#include <fstream>
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
@@ -28,10 +29,6 @@ extern float fftRes[];
 
 namespace {
 
-
-enum MenuState { START, MENU, GAME, ENDING, HIGHSCORE };
-MenuState menuState = START;
-
 GLuint startTex, menuTex;
 
 const int FREQ = 44100;
@@ -48,39 +45,167 @@ vector<short>& getSolo() {
 }
 size_t musicPos;
 
+const int NUM_KEYS = 10;
 
-const int NOTE_KEYS[] = {
-	271,
-	266,
-	256,
-	275,
-	274,
-	276,
-	305,
-	281,
-	280,
-	307};
+
+
+#pragma pack(push,1)
+struct Config {
+	int NOTE_KEYS[NUM_KEYS] = {
+		271,
+		266,
+		256,
+		275,
+		274,
+		276,
+		305,
+		281,
+		280,
+		307};
+} config;
+#pragma pack(pop)
+const string CONFIG_FILE = "config.dat";
+void readConfig() {
+	ifstream in(CONFIG_FILE);
+	if (!in) return;
+	in.read((char*)&config, sizeof(config));
+}
+#if 0
+void writeConfig() {
+	ofstream out(CONFIG_FILE);
+	out.write((char*)&config, sizeof(config));
+}
+#endif
 
 SDL_Surface* screen;
 
-bool end=0;
-double prevTime;
+bool end = false;
+
 double soloVolume = 1.0;
 
 int getNoteKey(SDLKey k) {
-	for(size_t i=0; i<sizeof(NOTE_KEYS)/sizeof(NOTE_KEYS[0]); ++i) {
-		if (k==NOTE_KEYS[i]) {
+	for(int i=0; i<NUM_KEYS; ++i) {
+		if (k==config.NOTE_KEYS[i]) {
 			return i;
 		}
 	}
 	return -1;
 }
 
+const string scoreFile = "scores.dat";
+
+
+struct GameState {
+	virtual ~GameState() {}
+	virtual void render() = 0;
+	virtual void update() {};
+	virtual void keyDown(SDLKey key) = 0;
+	virtual void keyUp(SDLKey) {};
+	virtual bool isInGame() const {return false;}
+
+	static void setState(GameState* state) {
+		delete curState;
+		curState = state;
+	}
+	static GameState& get() {
+		return *curState;
+	}
+
+private:
+	static GameState* curState;
+};
+GameState* GameState::curState = nullptr;
+
+struct StartState: GameState {
+	virtual void render() override {drawImageFrame(startTex);}
+	virtual void keyDown(SDLKey) override;
+};
+
+struct HighScoreState: GameState {
+	virtual void render() override {drawHighScore();}
+	virtual void keyDown(SDLKey) override {
+		setState(new StartState());
+	}
+};
+struct EndingState: GameState {
+	string name;
+	virtual void render() override {drawEnding(name);}
+	virtual void keyDown(SDLKey k) override {
+		if (k == SDLK_RETURN) {
+			highScore.addPlayer(name, score);
+			highScore.writeToFile(scoreFile);
+			setState(new HighScoreState());
+		} else if (k>='a' && k<='z') {
+			name += k;
+		} else if (k==SDLK_BACKSPACE && !name.empty()) {
+			name.erase(name.end()-1);
+		}
+	}
+};
+
+void updateFFT(size_t pos);
+const int FFT_UPDATE_INTERVAL = FREQ / 40;
+
+struct InGameState: GameState {
+	double prevTime = SDL_GetTicks() / 1000.0;
+	size_t nextFFTPos = 0;
+	InGameState() {
+		newGame();
+	}
+	virtual bool isInGame() const override {return true;}
+	virtual void render() override {
+		double time = SDL_GetTicks()/1000.;
+		updateGameState(time - prevTime);
+		prevTime = time;
+		drawFrame();
+	}
+	virtual void update() override {
+		SDL_LockAudio();
+		soloVolume = curVolume;
+		size_t pos = musicPos;
+		SDL_UnlockAudio();
+		while (pos + FREQ*10/40 >= nextFFTPos) {
+			updateFFT(nextFFTPos);
+			nextFFTPos += FFT_UPDATE_INTERVAL;
+		}
+		if (musicPos > getBG().size() + 2*FREQ) {
+			setState(new EndingState());
+		}
+	}
+	virtual void keyDown(SDLKey k) override {
+		int note = getNoteKey(k);
+		if (note>=0) ::keyDown(note);
+		if (k==SDLK_t) {
+			setState(new EndingState());
+		} else if (k==SDLK_u) {
+			showScoreGet = !showScoreGet;
+		}
+	}
+	virtual void keyUp(SDLKey k) override {
+		int note = getNoteKey(k);
+		if (note>=0) ::keyUp(note);
+	}
+};
+struct InMenuState: GameState {
+	virtual void render() override {drawMenuFrame(menuTex);}
+	virtual void keyDown(SDLKey k) override {
+		if(k==SDLK_n){
+			setState(new InGameState);
+		} else if(k==SDLK_h){
+			setState(new HighScoreState);
+		} else if(k==SDLK_q) {
+			end = true;
+		} else if (k==SDLK_s) {
+			slowMusic = !slowMusic;
+		}
+	}
+};
+void StartState::keyDown(SDLKey) {
+	setState(new InMenuState);
+}
+
 string name;
 
-const string scoreFile = "scores.dat";
-size_t nextFFTPos;
-const int FFT_UPDATE_INTERVAL = FREQ / 40;
 
 void updateFFT(size_t mpos) {
 	const int FFT_SIZE = 4096;
@@ -114,72 +239,12 @@ void updateFFT(size_t mpos) {
 void clearMusicPos() {
 	SDL_LockAudio();
 	musicPos = 0;
-	nextFFTPos = 0;
 	SDL_UnlockAudio();
-}
-
-void changeState(MenuState state) {
-	menuState = state;
-	switch(state) {
-		case START:
-			clearMusicPos();
-			break;
-		case MENU:
-			break;
-		case GAME:
-			newGame();
-			prevTime = SDL_GetTicks() / 1000.0;
-			clearMusicPos();
-			break;
-		case ENDING:
-			name.clear();
-			break;
-		case HIGHSCORE:
-			break;
-		default:
-			cerr<<"Invalid state "<<state<<'\n';
-			break;
-	};
 }
 
 void handleKey(SDLKey k) {
 	if (k==SDLK_F10) end=1;
-	if (menuState == START) {
-		if (k==SDLK_RETURN) menuState = MENU;
-	} else if (menuState == MENU) {
-		if(k==SDLK_n){
-			changeState(GAME);
-		} else if(k==SDLK_h){
-			menuState = HIGHSCORE;
-		} else if(k==SDLK_q) {
-			end = 1;
-		} else if (k==SDLK_s) {
-			slowMusic = !slowMusic;
-		}
-	} else if (menuState == GAME) {
-		int note = getNoteKey(k);
-		if (note>=0) keyDown(note);
-		if (k==SDLK_t) {
-			changeState(ENDING);
-			name.clear();
-		} else if (k==SDLK_u) {
-			showScoreGet = !showScoreGet;
-		}
-	} else if (menuState == ENDING) {
-		if (k == SDLK_RETURN) {
-			highScore.addPlayer(name, score);
-			highScore.writeToFile(scoreFile);
-			changeState(START);
-		} else if (k>='a' && k<='z') {
-			name += k;
-		} else if (k==SDLK_BACKSPACE && !name.empty()) {
-			name.erase(name.end()-1);
-		}
-	} else if (menuState == HIGHSCORE) {
-		if (k == SDLK_RETURN) {
-			changeState(START);
-		}
-	}
+	GameState::get().keyDown(k);
 }
 int fullscreen = SDL_FULLSCREEN;
 
@@ -204,34 +269,15 @@ void loopIter() {
 			glViewport(0,0,e.resize.w,e.resize.h);
 		}
 	}
-	if (menuState == START) {
-		drawImageFrame(startTex);
-	} else if (menuState == MENU) {
-		drawMenuFrame(menuTex);
-	} else if (menuState == GAME) {
-		double time = SDL_GetTicks()/1000.;
-		updateGameState(time - prevTime);
-		prevTime = time;
-		drawFrame();
-	} else if (menuState == ENDING) {
-		drawEnding(name);
-	} else if (menuState == HIGHSCORE) {
-		drawHighScore();
-	}
+	GameState::get().render();
 	SDL_GL_SwapBuffers();
-	if (menuState == GAME) {
-		SDL_LockAudio();
-		soloVolume = curVolume;
-		size_t pos = musicPos;
-		SDL_UnlockAudio();
-		while (pos + FREQ*10/40 >= nextFFTPos) {
-			updateFFT(nextFFTPos);
-			nextFFTPos += FFT_UPDATE_INTERVAL;
-		}
+	static bool prevInGame = false;
+	bool inGame = GameState::get().isInGame();
+	if (inGame != prevInGame) {
+		clearMusicPos();
+		prevInGame = inGame;
 	}
-	if (menuState == GAME && musicPos > getBG().size() + 2*FREQ) {
-		changeState(ENDING);
-	}
+	GameState::get().update();
 
 	if (end) {
 		SDL_Quit();
@@ -239,7 +285,6 @@ void loopIter() {
 }
 
 void mainLoop() {
-	prevTime = SDL_GetTicks()/1000.;
 	startTex = makeTexture("data/alku.jpg");
 	menuTex = makeTexture("data/valikko.jpg");
 	highScore.loadFromFile(scoreFile);
@@ -260,14 +305,14 @@ void callback(void* udata, Uint8* s, int len)
 	len /= 2;
 	Sint16* stream = (Sint16*)s;
 
-	if (menuState==GAME) {
+	if (GameState::get().isInGame()) {
 		for(int i=0; i<len && musicPos+i<getBG().size(); ++i) {
 			stream[i] = getBG()[musicPos + i];
 		}
 		for(int i=0; i<len && musicPos+i<getSolo().size(); ++i) {
 			stream[i] += soloVolume * getSolo()[musicPos + i];
 		}
-	} else if (menuState == START || menuState == MENU) {
+	} else {
 		for(int i=0; i<len && musicPos+i<startMusic.size(); ++i) {
 			stream[i] = startMusic[musicPos + i];
 		}
@@ -300,6 +345,7 @@ void genMusic() {
 }
 
 int main(int argc, char* argv[]) {
+	readConfig();
 	bool resoChange = 0;
 	for(int i=1; i<argc; ++i) {
 		string s = argv[i];
@@ -343,6 +389,7 @@ int main(int argc, char* argv[]) {
 	assert(screen);
 //	genMusic();
 	SDL_OpenAudio(&spec, 0);
+	GameState::setState(new StartState());
 	SDL_PauseAudio(0);
 	mainLoop();
 }
