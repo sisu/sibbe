@@ -17,5 +17,6 @@ void drawHighScore();
 
 void drawMenuFrame(GLuint tex);
 void drawImageFrame(GLuint tex);
+void drawConfigFrame(int index, int max);
 
 static const int FFT_BUCKETS = 1000;

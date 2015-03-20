@@ -51,7 +51,7 @@ const int NUM_KEYS = 10;
 
 #pragma pack(push,1)
 struct Config {
-	int NOTE_KEYS[NUM_KEYS] = {
+	int noteKeys[NUM_KEYS] = {
 		271,
 		266,
 		256,
@@ -70,12 +70,10 @@ void readConfig() {
 	if (!in) return;
 	in.read((char*)&config, sizeof(config));
 }
-#if 0
 void writeConfig() {
 	ofstream out(CONFIG_FILE);
 	out.write((char*)&config, sizeof(config));
 }
-#endif
 
 SDL_Surface* screen;
 
@@ -85,7 +83,7 @@ double soloVolume = 1.0;
 
 int getNoteKey(SDLKey k) {
 	for(int i=0; i<NUM_KEYS; ++i) {
-		if (k==config.NOTE_KEYS[i]) {
+		if (k==config.noteKeys[i]) {
 			return i;
 		}
 	}
@@ -186,17 +184,34 @@ struct InGameState: GameState {
 		if (note>=0) ::keyUp(note);
 	}
 };
+
+struct ConfigKeyState: GameState {
+	int keyIndex = 0;
+	virtual void render() override {
+		drawConfigFrame(keyIndex+1, NUM_KEYS);
+	}
+	virtual void keyDown(SDLKey k) override {
+		config.noteKeys[keyIndex++] = k;
+		if (keyIndex == NUM_KEYS) {
+			writeConfig();
+			setState(new StartState());
+		}
+	}
+};
+
 struct InMenuState: GameState {
 	virtual void render() override {drawMenuFrame(menuTex);}
 	virtual void keyDown(SDLKey k) override {
 		if(k==SDLK_n){
 			setState(new InGameState);
-		} else if(k==SDLK_h){
+		} else if(k==SDLK_h) {
 			setState(new HighScoreState);
 		} else if(k==SDLK_q) {
 			end = true;
 		} else if (k==SDLK_s) {
 			slowMusic = !slowMusic;
+		} else if(k==SDLK_c) {
+			setState(new ConfigKeyState);
 		}
 	}
 };

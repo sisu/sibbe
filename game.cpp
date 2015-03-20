@@ -611,3 +611,13 @@ void drawHighScore() {
 		if (!name.empty()) drawText(name.c_str(), size, -0.7, 0.8 - 0.1*i, false);
 	}
 }
+
+void drawConfigFrame(int index, int max) {
+	render.clear();
+	gl.disable(GL_DEPTH_TEST);
+	gl.enable(GL_BLEND);
+	char buf[64];
+	sprintf(buf, "Press violin key %d of %d", index, max);
+	const double size = 0.08;
+	drawText(buf, size, -0.5, 0.3, false);
+}
