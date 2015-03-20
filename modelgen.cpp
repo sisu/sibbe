@@ -1,4 +1,5 @@
 #include "modelgen.hpp"
+#include "pi.hpp"
 
 Model makeCube(float size) {
 	Model m;

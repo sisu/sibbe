@@ -402,9 +402,13 @@ int main(int argc, char* argv[]) {
 	}
 	screen = SDL_SetVideoMode(w, h, 0, SDL_OPENGL | SDL_RESIZABLE | fullscreen);
 	assert(screen);
+#ifdef USE_GLEW
+	glewInit();
+#endif
 //	genMusic();
 	SDL_OpenAudio(&spec, 0);
 	GameState::setState(new StartState());
 	SDL_PauseAudio(0);
 	mainLoop();
+	return 0;
 }

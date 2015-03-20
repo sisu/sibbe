@@ -1,5 +1,5 @@
 #pragma once
-#include <GL/gl.h>
+#include "render/GL.hpp"
 #include <string>
 using namespace std;
 

@@ -5,14 +5,16 @@ ODIR:=obj
 ODIRS:=$(addprefix $(ODIR)/, $(DIRS))
 BIN:=sibbe
 
-BASEFLAGS:=-Wall -Wextra -std=c++0x -I. -MMD
+SDL_CONFIG=sdl-config
+BASEFLAGS:=-Wall -Wextra -std=c++0x -I. -MMD $(shell $(SDL_CONFIG) --cflags)
 DFLAGS:=-g
 OFLAGS:=-O2
-CXXFLAGS:=$(BASEFLAGS) $(DFLAGS)
+OPTFLAGS=$(DFLAGS)
+CXXFLAGS:=$(BASEFLAGS) $(OPTFLAGS)
 #CXXFLAGS:=$(BASEFLAGS) $(OFLAGS)
 CXX=clang++
 GLLIBS:=-lGL -lGLU
-LIBS:=$(shell sdl-config --libs) $(GLLIBS) -lSDL_ttf -lSDL_image
+LIBS:=$(shell $(SDL_CONFIG) --libs) $(GLLIBS) -lSDL_ttf -lSDL_image
 
 .PHONY: all clean
 

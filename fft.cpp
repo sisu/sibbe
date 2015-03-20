@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include "pi.hpp"
 
 static int ilog2(int n)
 {

@@ -7,6 +7,7 @@
 #include "modelgen.hpp"
 #include "text.hpp"
 #include "image.hpp"
+#include "pi.hpp"
 #include "render/Model.hpp"
 #include "render/projection.hpp"
 #include "render/Renderer.hpp"

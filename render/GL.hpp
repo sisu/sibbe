@@ -2,10 +2,12 @@
 
 #ifdef ANDROID
 #include <GLES2/gl2.h>
-#else
+#elif USE_GLEW==0
 #define GL_GLEXT_PROTOTYPES
 #include <GL/gl.h>
 //#include <GLES2/gl2.h>
+#else
+#include <GL/glew.h>
 #endif
 #include <map>
 
