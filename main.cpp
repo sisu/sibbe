@@ -202,8 +202,6 @@ struct ConfigKeyState: GameState {
 struct InMenuState: GameState {
 	virtual void render() override {drawMenuFrame(menuTex);}
 	virtual void keyDown(SDLKey k) override {
-		setState(new InGameState);
-		return;
 		if(k==SDLK_n){
 			setState(new InGameState);
 		} else if(k==SDLK_h) {
@@ -310,7 +308,7 @@ void mainLoop() {
 	initGame();
 	cout<<"start loop\n";
 #ifdef __EMSCRIPTEN__
-	emscripten_set_main_loop(loopIter, 60, true);
+	emscripten_set_main_loop(loopIter, 0, true);
 #else
 	while(!end) {
 		loopIter();
