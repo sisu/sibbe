@@ -3,10 +3,24 @@
  * Jos ei toimi, kokeile nimiä SDL/SDL.h ja SDL/SDL_opengl.h */
 #include <SDL/SDL.h>
 #include <SDL/SDL_opengl.h>
+#include <iostream>
+#include <cassert>
+using namespace std;
 
 /* Funktio itse. */
 int MySDL_glTexImage2D(SDL_Surface *kuva)
 {
+#ifdef __EMSCRIPTEN__
+	int bpp = kuva->format->BytesPerPixel;
+	cout<<"bpp "<<bpp<<'\n';
+	if (bpp == 4) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, kuva->w, kuva->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, kuva->pixels);
+	} else {
+		assert(0);
+	}
+	return 0;
+#endif
+
 	SDL_Surface *apu;
 	/* Helpottaa, jos tavut ovat järjestyksessä RGBA.
 	 * Säädetään siis konetyypin mukaan värien bittimaskit
@@ -23,7 +37,6 @@ int MySDL_glTexImage2D(SDL_Surface *kuva)
 		amask = 0xff << ashift;
 	Uint32 *ptr;
 	Uint32 kuva_flags;
-	Uint32 kuva_colorkey;
 	Uint8 kuva_alpha = 0;
 	SDL_Rect r1, r2;
 
@@ -35,6 +48,7 @@ int MySDL_glTexImage2D(SDL_Surface *kuva)
 	/* Otetaan talteen arvot, jotka muuttuvat funktion aikana */
 	kuva_flags = kuva->flags;
 #ifndef __EMSCRIPTEN__
+	Uint32 kuva_colorkey;
 	kuva_alpha = kuva->format->alpha;
 	kuva_colorkey = kuva->format->colorkey;
 #endif
@@ -86,10 +100,13 @@ int MySDL_glTexImage2D(SDL_Surface *kuva)
 #include <SDL/SDL_image.h>
 #include <cassert>
 void loadImage(const char* file) {
+	cout<<"loading image "<<file<<'\n';
 	SDL_Surface* img = IMG_Load(file);
 	assert(img);
+	cout<<"calling metabolix's code\n";
 	int res = MySDL_glTexImage2D(img);
 	assert(!res);
+	cout<<"freeing image data\n";
 	SDL_FreeSurface(img);
 }
 GLuint makeTexture(const char* file) {
@@ -98,6 +115,8 @@ GLuint makeTexture(const char* file) {
 	glBindTexture(GL_TEXTURE_2D, tex);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	loadImage(file);
 	return tex;
 }

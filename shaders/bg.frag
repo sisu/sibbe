@@ -4,14 +4,14 @@ precision highp float;
 
 uniform sampler2D fft;
 uniform float avg;
-uniform float precision;
+uniform float prec;
 
 varying vec2 uv;
 
 const float baseSamples = 2000.0;
 
 void main() {
-  float p2 = precision * precision;
+  float p2 = prec * prec;
   float bins = (baseSamples - 10.0)*p2 + 10.0;
 
   float binSize = 1.0/bins;

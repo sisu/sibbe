@@ -202,6 +202,8 @@ struct ConfigKeyState: GameState {
 struct InMenuState: GameState {
 	virtual void render() override {drawMenuFrame(menuTex);}
 	virtual void keyDown(SDLKey k) override {
+		setState(new InGameState);
+		return;
 		if(k==SDLK_n){
 			setState(new InGameState);
 		} else if(k==SDLK_h) {
@@ -300,10 +302,13 @@ void loopIter() {
 }
 
 void mainLoop() {
+	cout<<"loading textures\n";
 	startTex = makeTexture("data/alku.jpg");
 	menuTex = makeTexture("data/valikko.jpg");
 	highScore.loadFromFile(scoreFile);
+	cout<<"init game\n";
 	initGame();
+	cout<<"start loop\n";
 #ifdef __EMSCRIPTEN__
 	emscripten_set_main_loop(loopIter, 60, true);
 #else
@@ -360,7 +365,9 @@ void genMusic() {
 }
 
 int main(int argc, char* argv[]) {
+#ifndef __EMSCRIPTEN__
 	readConfig();
+#endif
 	bool resoChange = 0;
 	for(int i=1; i<argc; ++i) {
 		string s = argv[i];
