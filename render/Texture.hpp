@@ -1,6 +1,8 @@
 #pragma once
 
 struct Texture {
+	Texture(): id(0) {}
+	~Texture();
 
 	void init();
 

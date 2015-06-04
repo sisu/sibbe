@@ -52,9 +52,10 @@ const int NUM_KEYS = 10;
 #pragma pack(push,1)
 struct Config {
 	int noteKeys[NUM_KEYS] = {
-		271,
-		266,
-		256,
+		'a','s','d',
+//		271,
+//		266,
+//		256,
 		275,
 		274,
 		276,

@@ -12,10 +12,10 @@ int MySDL_glTexImage2D(SDL_Surface *kuva)
 {
 #ifdef __EMSCRIPTEN__
 	int bpp = kuva->format->BytesPerPixel;
-	cout<<"bpp "<<bpp<<'\n';
 	if (bpp == 4) {
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, kuva->w, kuva->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, kuva->pixels);
 	} else {
+		cout<<"bpp "<<bpp<<' '<<kuva->w<<' '<<kuva->h<<endl;
 		assert(0);
 	}
 	return 0;
@@ -38,7 +38,6 @@ int MySDL_glTexImage2D(SDL_Surface *kuva)
 	Uint32 *ptr;
 	Uint32 kuva_flags;
 	Uint8 kuva_alpha = 0;
-	SDL_Rect r1, r2;
 
 	/* Tarkistetaan kuva. */
 	if (!kuva || !kuva->w || !kuva->h) {
@@ -68,12 +67,17 @@ int MySDL_glTexImage2D(SDL_Surface *kuva)
 
 	/* OpenGL:n ja SDL:n y-akselit osoittavat eri suuntiin.
 	 * Kopioidaan siis kuva pikselirivi kerrallaan ylösalaisin. */
+	SDL_Rect r1, r2;
 	r1.x = r2.x = 0;
 	r1.h = r2.h = 1;
 	r1.w = r2.w = kuva->w;
+#if 0
 	for (r1.y = 0, r2.y = kuva->h - 1; r2.y >= 0; ++r1.y, --r2.y) {
 		SDL_BlitSurface(kuva, &r1, apu, &r2);
 	}
+#else
+	SDL_BlitSurface(kuva, 0, apu, 0);
+#endif
 
 	/* Koko pinnan alfa-arvo pitää palauttaa erikseen, jos sellainen on. */
 	if ((kuva_flags & SDL_SRCALPHA) && !kuva->format->Amask && kuva_alpha != 0xff) {
