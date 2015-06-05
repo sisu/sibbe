@@ -19,7 +19,7 @@ int MySDL_glTexImage2D(SDL_Surface *kuva)
 		assert(0);
 	}
 	return 0;
-#endif
+#else
 
 	SDL_Surface *apu;
 	/* Helpottaa, jos tavut ovat järjestyksessä RGBA.
@@ -46,11 +46,9 @@ int MySDL_glTexImage2D(SDL_Surface *kuva)
 
 	/* Otetaan talteen arvot, jotka muuttuvat funktion aikana */
 	kuva_flags = kuva->flags;
-#ifndef __EMSCRIPTEN__
 	Uint32 kuva_colorkey;
 	kuva_alpha = kuva->format->alpha;
 	kuva_colorkey = kuva->format->colorkey;
-#endif
 
 	/* Luodaan apupinta halutussa formaatissa (RGBA). */
 	apu = SDL_CreateRGBSurface(SDL_SWSURFACE, kuva->w, kuva->h, 32, rmask, gmask, bmask, amask);
@@ -94,11 +92,10 @@ int MySDL_glTexImage2D(SDL_Surface *kuva)
 	/* Lähetetään kuva OpenGL:lle, tuhotaan apupinta ja palautetaan asetukset. */
 	glTexImage2D(GL_TEXTURE_2D, 0, 4, apu->w, apu->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, apu->pixels);
 	SDL_FreeSurface(apu);
-#ifndef __EMSCRIPTEN__
 	SDL_SetAlpha(kuva, kuva_flags, kuva_alpha);
 	SDL_SetColorKey(kuva, kuva_flags, kuva_colorkey);
-#endif
 	return 0;
+#endif
 }
 
 #include <SDL/SDL_image.h>
@@ -107,10 +104,8 @@ void loadImage(const char* file) {
 	cout<<"loading image "<<file<<'\n';
 	SDL_Surface* img = IMG_Load(file);
 	assert(img);
-	cout<<"calling metabolix's code\n";
 	int res = MySDL_glTexImage2D(img);
 	assert(!res);
-	cout<<"freeing image data\n";
 	SDL_FreeSurface(img);
 }
 GLuint makeTexture(const char* file) {
