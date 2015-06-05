@@ -384,11 +384,11 @@ int main(int argc, char* argv[]) {
 			cout<<"Unknown argument "<<s<<'\n';
 		}
 	}
-	startMusic=readUncompressedWavFile("sound/alku.wav");
-	bgMusic[0] = readUncompressedWavFile("sound/tausta.wav");
-	solo[0] = readUncompressedWavFile("sound/soolo.wav");
-	bgMusic[1] = readUncompressedWavFile("sound/tausta_hidas.wav");
-	solo[1] = readUncompressedWavFile("sound/soolo_hidas.wav");
+	startMusic=readOggVorbis("sound/alku.ogg");
+	bgMusic[0] = readOggVorbis("sound/tausta.ogg");
+	solo[0] = readOggVorbis("sound/soolo.ogg");
+	bgMusic[1] = readOggVorbis("sound/tausta_hidas.ogg");
+	solo[1] = readOggVorbis("sound/soolo_hidas.ogg");
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_AUDIO);
 	SDL_ShowCursor(0);
 //	atexit(SDL_Quit);
