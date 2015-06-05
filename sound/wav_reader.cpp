@@ -5581,11 +5581,12 @@ vector<short> readOggVorbis(string file_name){
     short* out;
     int len=stb_vorbis_decode_filename(file_name.c_str(), &ch, &sr, &out);
     vector<short> ret;
-    //ret.resize(len);
-    for(int i=0; i<len; i++)
-        ret.push_back(out[i]);
 
-    cout<<"VITUN KOKO, SE ON "<<ret.size()<<endl;
+    if(len>=0)
+        ret.resize(len);
+    for(int i=0; i<len; i++)
+        ret[i]=out[i];
+
     return ret;
 }
 
