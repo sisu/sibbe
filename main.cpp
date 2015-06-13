@@ -44,6 +44,8 @@ vector<short>& getSolo() {
 	return solo[slowMusic];
 }
 size_t musicPos;
+double musicSyncAbs;
+double musicSyncRel;
 
 const int NUM_KEYS = 10;
 
@@ -52,6 +54,7 @@ const int NUM_KEYS = 10;
 #pragma pack(push,1)
 struct Config {
 	int noteKeys[NUM_KEYS] = {
+#if 0
 		'a','s','d',
 //		271,
 //		266,
@@ -62,7 +65,11 @@ struct Config {
 		305,
 		281,
 		280,
-		307};
+		307
+#else
+		SDLK_F1, SDLK_F2, SDLK_F3, SDLK_F4, SDLK_F5, SDLK_F6, SDLK_F7, SDLK_F8, SDLK_F9, SDLK_F10
+#endif
+	};
 } config;
 #pragma pack(pop)
 const string CONFIG_FILE = "config.dat";
@@ -146,16 +153,25 @@ void updateFFT(size_t pos);
 const int FFT_UPDATE_INTERVAL = FREQ / 40;
 
 struct InGameState: GameState {
-	double prevTime = SDL_GetTicks() / 1000.0;
+	double prevGameTime = 0;
+	double startTime = SDL_GetTicks() / 1000.0;
 	size_t nextFFTPos = 0;
 	InGameState() {
 		newGame();
+		SDL_LockAudio();
+		SDL_UnlockAudio();
 	}
 	virtual bool isInGame() const override {return true;}
 	virtual void render() override {
-		double time = SDL_GetTicks()/1000.;
-		updateGameState(time - prevTime);
-		prevTime = time;
+		double time0 = SDL_GetTicks()/1000.;
+		time0 += musicSyncRel - (musicSyncAbs - startTime);
+		double time = time0 - startTime;
+		SDL_LockAudio();
+		if (time > prevGameTime) {
+			updateGameState(time - prevGameTime);
+			prevGameTime = time;
+		}
+		SDL_UnlockAudio();
 		drawFrame();
 	}
 	virtual void update() override {
@@ -324,18 +340,23 @@ void callback(void* udata, Uint8* s, int len)
 	len /= 2;
 	Sint16* stream = (Sint16*)s;
 
+//	memset(s, 0, len);
+	int i=0;
 	if (GameState::get().isInGame()) {
-		for(int i=0; i<len && musicPos+i<getBG().size(); ++i) {
+		for(i=0; i<len && musicPos+i<getBG().size(); ++i) {
 			stream[i] = getBG()[musicPos + i];
 		}
-		for(int i=0; i<len && musicPos+i<getSolo().size(); ++i) {
+		for(i=0; i<len && musicPos+i<getSolo().size(); ++i) {
 			stream[i] += soloVolume * getSolo()[musicPos + i];
 		}
 	} else {
-		for(int i=0; i<len && musicPos+i<startMusic.size(); ++i) {
+		for(i=0; i<len && musicPos+i<startMusic.size(); ++i) {
 			stream[i] = startMusic[musicPos + i];
 		}
 	}
+//	for(;i<len;++i)stream[i]=0;
+	musicSyncRel = double(musicPos) / FREQ;
+	musicSyncAbs = SDL_GetTicks() / 1000.0;
 	musicPos += len;
 }
 
