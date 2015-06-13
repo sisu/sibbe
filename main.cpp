@@ -158,20 +158,10 @@ struct InGameState: GameState {
 	size_t nextFFTPos = 0;
 	InGameState() {
 		newGame();
-		SDL_LockAudio();
-		SDL_UnlockAudio();
+		musicSyncAbs = startTime;
 	}
 	virtual bool isInGame() const override {return true;}
 	virtual void render() override {
-		double time0 = SDL_GetTicks()/1000.;
-		time0 += musicSyncRel - (musicSyncAbs - startTime);
-		double time = time0 - startTime;
-		SDL_LockAudio();
-		if (time > prevGameTime) {
-			updateGameState(time - prevGameTime);
-			prevGameTime = time;
-		}
-		SDL_UnlockAudio();
 		drawFrame();
 	}
 	virtual void update() override {
@@ -185,6 +175,17 @@ struct InGameState: GameState {
 		}
 		if (musicPos > getBG().size() + 2*FREQ) {
 			setState(new EndingState());
+		}
+
+		double time0 = SDL_GetTicks()/1000.;
+		SDL_LockAudio();
+		time0 += musicSyncRel - (musicSyncAbs - startTime);
+		SDL_UnlockAudio();
+		double time = time0 - startTime;
+//		cout<<"ttt "<<time<<" ; "<<(musicSyncAbs-startTime)<<' '<<musicSyncRel<<'\n';
+		if (time > prevGameTime) {
+			updateGameState(time - prevGameTime);
+			prevGameTime = time;
 		}
 	}
 	virtual void keyDown(SDLKey k) override {
@@ -280,6 +281,8 @@ void updateFFT(size_t mpos) {
 void clearMusicPos() {
 	SDL_LockAudio();
 	musicPos = 0;
+	musicSyncAbs = SDL_GetTicks();
+	musicSyncRel = 0.0;
 	SDL_UnlockAudio();
 }
 
@@ -310,8 +313,6 @@ void loopIter() {
 			glViewport(0,0,e.resize.w,e.resize.h);
 		}
 	}
-	GameState::get().render();
-	SDL_GL_SwapBuffers();
 	static bool prevInGame = false;
 	bool inGame = GameState::get().isInGame();
 	if (inGame != prevInGame) {
@@ -319,6 +320,8 @@ void loopIter() {
 		prevInGame = inGame;
 	}
 	GameState::get().update();
+	GameState::get().render();
+	SDL_GL_SwapBuffers();
 
 	if (end) {
 		SDL_Quit();
