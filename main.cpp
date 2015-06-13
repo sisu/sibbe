@@ -385,6 +385,7 @@ int main(int argc, char* argv[]) {
 		}
 	}
 	startMusic=readOggVorbis("sound/alku.ogg");
+    startMusic.resize(startMusic.size()+48000);
 	bgMusic[0] = readOggVorbis("sound/tausta.ogg");
 	solo[0] = readOggVorbis("sound/soolo.ogg");
 	bgMusic[1] = readOggVorbis("sound/tausta_hidas.ogg");
