@@ -29,7 +29,7 @@ extern float fftRes[];
 
 namespace {
 
-GLuint startTex, menuTex;
+GLuint startTex, menuTex, tutorTex;
 
 const int FREQ = 44100;
 const int SAMPLES = 512;
@@ -200,6 +200,13 @@ struct ConfigKeyState: GameState {
 	}
 };
 
+struct TutorialState: GameState {
+	virtual void render() override {drawMenuFrame(tutorTex);}
+	virtual void keyDown(SDLKey k) override {
+		setState(new StartState());
+	}
+};
+
 struct InMenuState: GameState {
 	virtual void render() override {drawMenuFrame(menuTex);}
 	virtual void keyDown(SDLKey k) override {
@@ -213,7 +220,9 @@ struct InMenuState: GameState {
 			slowMusic = !slowMusic;
 		} else if(k==SDLK_c) {
 			setState(new ConfigKeyState);
-		}
+		} else if(k==SDLK_t) {
+            setState(new TutorialState);
+        }
 	}
 };
 void StartState::keyDown(SDLKey) {
@@ -304,6 +313,7 @@ void mainLoop() {
 	cout<<"loading textures\n";
 	startTex = makeTexture("data/alku.jpg");
 	menuTex = makeTexture("data/valikko.jpg");
+    tutorTex = makeTexture("data/howtoplay.jpg");
 	highScore.loadFromFile(scoreFile);
 	cout<<"init game\n";
 	initGame();
